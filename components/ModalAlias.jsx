@@ -6,12 +6,15 @@ import {
   Pressable,
   TextInput,
   TouchableWithoutFeedback,
-  Modal,
   Platform,
   KeyboardAvoidingView,
   Alert,
   BackHandler,
+  Share,
 } from 'react-native';
+import Clipboard from '@react-native-clipboard/clipboard';
+import RNPrint from 'react-native-print';
+
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAppContext } from '../contexts/AppContext';
 
@@ -39,22 +42,86 @@ const ModalAlias = ({ isVisible, onClose }) => {
 
   const copyToClipboard = text => {
     Alert.alert('Copiado', 'Texto copiado al portapapeles');
+    Clipboard.setString(text);
   };
 
   const handleSaveAlias = () => {
+    if (alias.trim() === '') {
+      Alert.alert('Error', 'El alias no puede estar vacío');
+      return;
+    }
     cambiarAlias(alias);
     setIsEditing(false);
   };
 
-  if (!isVisible) return null;
+  const onShare = async () => {
+    try {
+      const message = `Mi información de WishWallet:\n\nNombre: ${userData.userName}\nAlias: ${userData?.alias}\nCVU: ${userData?.cvu}`;
+
+      const result = await Share.share({
+        message: message,
+        title: 'Compartir datos de WishWallet',
+      });
+
+      if (result.action === Share.sharedAction) {
+        console.log('Contenido compartido exitosamente');
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Compartir cancelado');
+      }
+    } catch (error) {
+      console.error('Error al compartir:', error);
+      Alert.alert('Error', 'No se pudo compartir la información');
+    }
+  };
+
+  const onPrint = async () => {
+    try {
+      const html = `
+      <html>
+        <body style="padding: 20px; font-family: Arial;">
+          <h1 style="color: #0066cc;margin: 30px 0">Wish Wallet</h1>
+          <h2>Constancia de CVU</h2>
+
+          <div style="margin: 20px 0; border: 1px solid #ccc; padding: 15px; border-radius: 10px;">
+            <p><strong>Nombre:</strong> ${userData.userName}</p>
+            <p><strong>Alias:</strong> ${userData.alias}</p>
+            <p><strong>CVU:</strong> ${userData.cvu}</p>
+            <p><strong>CUIL:</strong> ${userData.CUIL || 'No disponible'}</p>
+          </div>
+
+          <p style="text-align:center; font-size: 12px; color: #555;">
+            Fecha: ${new Date().toLocaleDateString()}
+          </p>
+        </body>
+      </html>
+    `;
+      const pdf = await RNPrint.print({ html });
+      const result = await Share.share({
+        title: 'Compartir constancia de CVU',
+        url: pdf,
+        type: 'application/pdf',
+      });
+
+      if (result.action === Share.sharedAction) {
+        console.log('Compartido exitosamente');
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Compartir cancelado');
+      }
+    } catch (error) {
+      console.error('Error al imprimir', error);
+      Alert.alert('Error', 'No se pudo imprimir el comprobante');
+    }
+  };
+
+  useEffect(() => {
+    if (isVisible) {
+      setAlias(userData?.alias || '');
+      setIsEditing(false);
+    }
+  }, [isVisible, userData?.alias]);
 
   return (
-    <Modal
-      animationType="fade"
-      transparent={true}
-      visible={isVisible}
-      onRequestClose={onClose}
-    >
+    <View style={styles.overlay}>
       <TouchableWithoutFeedback onPress={onClose}>
         <View style={styles.centeredView}>
           <TouchableWithoutFeedback>
@@ -77,12 +144,25 @@ const ModalAlias = ({ isVisible, onClose }) => {
                 </Text>
                 <View style={styles.row}>
                   {isEditing ? (
-                    <View style={styles.editContainer}>
+                    <View
+                      style={[
+                        styles.editContainer,
+                        { borderBottomColor: colors.text },
+                      ]}
+                    >
                       <TextInput
-                        style={[styles.input, { color: colors.text, flex: 1 }]}
+                        style={[
+                          styles.input,
+                          {
+                            color: colors.text,
+                            flex: 1,
+                            borderBottomColor: colors.border,
+                          },
+                        ]}
                         value={alias}
                         onChangeText={setAlias}
                         autoFocus
+                        placeholderTextColor={colors.label}
                       />
                       <Pressable
                         onPress={handleSaveAlias}
@@ -150,7 +230,7 @@ const ModalAlias = ({ isVisible, onClose }) => {
                     styles.actionButton,
                     { backgroundColor: colors.primary },
                   ]}
-                  onPress={() => {}}
+                  onPress={onShare}
                 >
                   <Text
                     style={[
@@ -166,7 +246,7 @@ const ModalAlias = ({ isVisible, onClose }) => {
                     styles.actionButton,
                     { borderColor: colors.primary, borderWidth: 1 },
                   ]}
-                  onPress={() => {}}
+                  onPress={onPrint}
                 >
                   <Text
                     style={[styles.actionButtonText, { color: colors.primary }]}
@@ -179,11 +259,19 @@ const ModalAlias = ({ isVisible, onClose }) => {
           </TouchableWithoutFeedback>
         </View>
       </TouchableWithoutFeedback>
-    </Modal>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+  },
   centeredView: {
     flex: 1,
     justifyContent: 'center',
@@ -241,7 +329,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 1,
     width: '100%',
-    marginVertical: 8,
+    marginBottom: 10,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -259,19 +347,20 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontWeight: '500',
+    fontSize: 14,
   },
   editContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
     borderBottomWidth: 1,
-    borderColor: '#ccc',
     paddingRight: 8,
   },
   input: {
     height: 40,
     fontSize: 16,
     paddingVertical: 8,
+    paddingHorizontal: 4,
   },
 });
 

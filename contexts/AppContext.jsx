@@ -22,8 +22,8 @@ export const AppProvider = ({ children }) => {
 
   const [userData, setUserData] = useState({
     alias: 'dream.wallet.user',
-    cvu: '0000000000000000',
-    UserName: 'Usuario Fulanito',
+    cvu: '0000009600020981681002',
+    userName: 'Usuario Fulanito',
     CUIL: '20-45000001-8',
   });
 
@@ -41,23 +41,40 @@ export const AppProvider = ({ children }) => {
     });
   };
 
-  const sumarBalance = suma => {
-    setBalance(balance + parseFloat(suma));
+  const sumarBalance = async suma => {
+    const nuevoBalance = balance + parseFloat(suma);
+    setBalance(nuevoBalance);
+    try {
+      await AsyncStorage.setItem('balance', nuevoBalance.toString());
+      console.log('Balance guardado en storage: ', nuevoBalance);
+    } catch (error) {
+      console.error('Error al guardar el balance:', error);
+    }
   };
 
-  const restarBalance = resta => {
-    setBalance(balance - parseFloat(resta));
+  const restarBalance = async resta => {
+    const nuevoBalance = parseFloat(balance) - parseFloat(resta);
+    setBalance(nuevoBalance);
+    await AsyncStorage.setItem('balance', nuevoBalance.toString())
+      .then(() => console.log('Balance guardado en storage: ', nuevoBalance))
+      .catch(error => console.error('Error al guardar el balance:', error));
   };
 
-  const agregarGasto = gasto => {
+  const agregarGasto = async gasto => {
     setGastos(prevGastos => [...prevGastos, gasto]);
+    await AsyncStorage.setItem('gastos', JSON.stringify(gastos))
+      .then(() => console.log('Gastos guardados en storage: ', gastos))
+      .catch(error => console.error('Error al guardar los gastos:', error));
   };
 
-  const cambiarAlias = nuevoAlias => {
+  const cambiarAlias = async nuevoAlias => {
     setUserData(prev => ({
       ...prev,
       alias: nuevoAlias,
     }));
+    await AsyncStorage.setItem('alias', nuevoAlias)
+      .then(() => console.log('Alias guardado:', nuevoAlias))
+      .catch(error => console.error('Error al guardar el alias:', error));
   };
 
   const limpiarStorage = () => {
@@ -75,32 +92,48 @@ export const AppProvider = ({ children }) => {
         const balanceStorage = await AsyncStorage.getItem('balance');
         const temaStorage = await AsyncStorage.getItem('tema');
         const gastosStorage = await AsyncStorage.getItem('gastos');
+        const aliasStorage = await AsyncStorage.getItem('alias');
         console.log(
           'Storage cargado:\nBalance: ',
-          balanceStorage,
+          balanceStorage !== null ? parseFloat(balanceStorage) : 0,
           '\nTema: ',
-          temaStorage,
+          temaStorage !== 'claro' ? 'oscuro' : 'claro',
           '\nGastos: ',
-          JSON.parse(gastosStorage).length,
+          gastosStorage ? JSON.parse(gastosStorage).length : 0,
+          '\nAlias: ',
+          aliasStorage !== null ? aliasStorage : 'dream.wallet.user',
         );
 
-        if (balanceStorage !== null) {
-          setBalance(parseFloat(balanceStorage) || 0);
+        if (balanceStorage >= 0 && balanceStorage !== null) {
+          setBalance(parseFloat(balanceStorage));
         } else {
           setBalance(0);
+          await AsyncStorage.setItem('balance', '0');
         }
-        if (temaStorage) {
+        if (temaStorage === 'claro' || temaStorage === 'oscuro') {
           setTema(temaStorage);
         } else {
           setTema('oscuro');
           await AsyncStorage.setItem('tema', 'oscuro');
         }
-        if (gastosStorage) {
+        if (gastosStorage && Array.isArray(JSON.parse(gastosStorage))) {
           const parsedGastos = JSON.parse(gastosStorage);
           setGastos(parsedGastos);
         } else {
           setGastos([]);
           await AsyncStorage.setItem('gastos', JSON.stringify([]));
+        }
+        if (aliasStorage) {
+          setUserData(prev => ({
+            ...prev,
+            alias: aliasStorage,
+          }));
+        } else {
+          setUserData(prev => ({
+            ...prev,
+            alias: 'dream.wallet.user',
+          }));
+          await AsyncStorage.setItem('alias', 'dream.wallet.user');
         }
       } catch (error) {
         console.error('Error al cargar el storage:', error);
@@ -113,62 +146,9 @@ export const AppProvider = ({ children }) => {
     cargarStorage();
   }, []);
 
-  useEffect(() => {
-    if (balance === undefined) return;
-    const guardarBalance = async () => {
-      try {
-        if (isNaN(balance)) {
-          await AsyncStorage.setItem('balance', '0');
-          console.log('Balance guardado en storage: ', 0);
-        } else {
-          await AsyncStorage.setItem('balance', balance.toString());
-          console.log('Balance guardado en storage: ', balance);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    guardarBalance();
-  }, [balance]);
-
-  useEffect(() => {
-    if (isFirstLoad.current) return;
-    const guardarTema = async () => {
-      try {
-        if (tema === undefined) {
-          await AsyncStorage.setItem('tema', 'claro');
-        } else {
-          await AsyncStorage.setItem('tema', tema);
-        }
-        console.log('Tema guardado en storage: ', tema);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    guardarTema();
-  }, [tema]);
-
-  useEffect(() => {
-    if (gastos === undefined) return;
-    const guardarGastos = async () => {
-      try {
-        if (gastos === undefined) {
-          await AsyncStorage.setItem('gastos', JSON.stringify([]));
-        } else {
-          await AsyncStorage.setItem('gastos', JSON.stringify(gastos));
-        }
-        console.log('Gastos guardados en storage: ', gastos);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    guardarGastos();
-  }, [gastos]);
-
   // Notificaciones y gastos automáticos
   useEffect(() => {
     if (loading || balance === undefined || gastos === undefined) {
-      console.log('Esperando inicialización...', { loading, balance, gastos });
       return;
     }
 
@@ -266,9 +246,7 @@ export const AppProvider = ({ children }) => {
           });
         }
 
-        console.log(
-          `Gasto automático procesado: ${gasto.nombre} - $${gasto.monto}`,
-        );
+        console.log(`Gasto automático: ${gasto.nombre} - $${gasto.monto}`);
       } catch (error) {
         console.error('Error en el proceso de pago:', error.message);
       }

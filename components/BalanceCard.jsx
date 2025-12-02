@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -47,8 +47,7 @@ const BalanceCard = () => {
   };
 
   const handleTransferir = transferData => {
-    const { amount, reason, recipient } = transferData;
-    const montoTransferencia = parseFloat(amount);
+    const montoTransferencia = parseFloat(transferData.monto);
 
     if (montoTransferencia <= 0) {
       showAlerta('error', 'Error', 'El monto debe ser mayor a 0');
@@ -64,9 +63,7 @@ const BalanceCard = () => {
       'Transferencia de $' +
         montoTransferencia +
         ' a ' +
-        recipient +
-        ' por ' +
-        reason,
+        (transferData.descripcion || 'destinatario'),
     );
 
     restarBalance(montoTransferencia);
@@ -75,9 +72,7 @@ const BalanceCard = () => {
     showAlerta(
       'success',
       'Transferencia exitosa',
-      `Se transfirió $${montoTransferencia.toFixed(2)} a ${
-        recipient || 'el destinatario'
-      }`,
+      `Se transfirió $${montoTransferencia.toFixed(2)}`,
     );
   };
 
@@ -226,10 +221,6 @@ const BalanceCard = () => {
             setTransferencia('');
           }}
           onConfirm={handleTransferir}
-          balance={balance}
-          value={transferencia}
-          setValue={setTransferencia}
-          colors={colors}
         />
       )}
       {isAliasVisible && (

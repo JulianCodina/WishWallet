@@ -39,8 +39,8 @@ const PREDEFINED_CONTACTS = [
   },
 ];
 
-const ModalTranferir = ({ isVisible, onClose, onConfirm, colors }) => {
-  const { balance, agregarGasto } = useAppContext();
+const ModalTranferir = ({ isVisible, onClose, onConfirm }) => {
+  const { colors, balance, agregarGasto } = useAppContext();
   const [step, setStep] = useState(1); // 1: Alias/CVU, 2: Confirmar datos, 3: Monto
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [alias, setAlias] = useState('');
@@ -105,6 +105,7 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, colors }) => {
         monto: parseFloat(amount),
         fecha: new Date().toISOString(),
         categoria: reason,
+        result: 'success',
       };
 
       if (balance > transferData.monto) {
