@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ModalIngresar from './ModalIngresar';
 import ModalTransferir from './ModalTransferir';
+import ModalAlias from './ModalAlias';
 import { useAppContext } from '../contexts/AppContext';
 import { showAlerta } from './Alerta';
 
 const BalanceCard = () => {
-  const { balance, colors, sumarBalance, restarBalance } = useAppContext();
+  const { loading, balance, colors, sumarBalance, restarBalance } =
+    useAppContext();
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [isIngresarVisible, setIsIngresarVisible] = useState(false);
   const [isTransferirVisible, setIsTransferirVisible] = useState(false);
+  const [isAliasVisible, setIsAliasVisible] = useState(false);
   const [monto, setMonto] = useState('');
   const [transferencia, setTransferencia] = useState('');
 
@@ -92,28 +101,38 @@ const BalanceCard = () => {
             <Icon name="arrow-right" size={20} color={colors.label} />
           </View>
           <View style={styles.balanceAmount}>
-            {isBalanceVisible ? (
+            {loading !== true ? (
               <>
-                <Text
-                  style={[styles.balanceAmountText, { color: colors.text }]}
-                >
-                  ${balanceEntero}
-                </Text>
-                <Text style={[styles.balanceDecimals, { color: colors.label }]}>
-                  .{centavos}
-                </Text>
+                {isBalanceVisible ? (
+                  <>
+                    <Text
+                      style={[styles.balanceAmountText, { color: colors.text }]}
+                    >
+                      ${balanceEntero}
+                    </Text>
+                    <Text
+                      style={[styles.balanceDecimals, { color: colors.label }]}
+                    >
+                      .{centavos}
+                    </Text>
+                  </>
+                ) : (
+                  <>
+                    <Text
+                      style={[styles.balanceAmountText, { color: colors.text }]}
+                    >
+                      $****
+                    </Text>
+                    <Text
+                      style={[styles.balanceDecimals, { color: colors.label }]}
+                    >
+                      .**
+                    </Text>
+                  </>
+                )}
               </>
             ) : (
-              <>
-                <Text
-                  style={[styles.balanceAmountText, { color: colors.text }]}
-                >
-                  $****
-                </Text>
-                <Text style={[styles.balanceDecimals, { color: colors.label }]}>
-                  .**
-                </Text>
-              </>
+              <ActivityIndicator size="small" color={colors.primary} />
             )}
             <Pressable
               style={styles.visibilityButton}
@@ -162,6 +181,7 @@ const BalanceCard = () => {
                 styles.secondaryButton,
                 { backgroundColor: colors.secondary },
               ]}
+              onPress={() => setIsAliasVisible(true)}
             >
               <Icon name="text-snippet" size={25} color={colors.primary} />
             </Pressable>
@@ -210,6 +230,14 @@ const BalanceCard = () => {
           value={transferencia}
           setValue={setTransferencia}
           colors={colors}
+        />
+      )}
+      {isAliasVisible && (
+        <ModalAlias
+          isVisible={isAliasVisible}
+          onClose={() => {
+            setIsAliasVisible(false);
+          }}
         />
       )}
     </>

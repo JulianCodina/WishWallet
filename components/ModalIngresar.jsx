@@ -106,14 +106,18 @@ const ModalIngresar = ({
             ]}
             onPress={onClose}
           >
-            <Text style={{ color: colors.primary }}>Cancelar</Text>
+            <Text style={{ color: colors.primary, fontWeight: '500' }}>
+              Cancelar
+            </Text>
           </Pressable>
 
           <Pressable
             style={[styles.modalButton, { backgroundColor: colors.primary }]}
             onPress={onConfirm}
           >
-            <Text style={{ color: colors.contrast }}>Aceptar</Text>
+            <Text style={{ color: colors.contrast, fontWeight: '500' }}>
+              Aceptar
+            </Text>
           </Pressable>
         </View>
       </View>

@@ -12,34 +12,48 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAppContext } from '../contexts/AppContext';
 
-const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
+const PREDEFINED_CONTACTS = [
+  { id: '1', alias: 'juan.perez', name: 'Juan Pérez', cuit: '20-12345678-9' },
+  { id: '2', alias: 'maria.gomez', name: 'María Gómez', cuit: '27-98765432-1' },
+  {
+    id: '3',
+    alias: 'carlos.lopez',
+    name: 'Carlos López',
+    cuit: '23-45678901-2',
+  },
+  {
+    id: '4',
+    alias: 'julian.codina',
+    name: 'Julián Codina',
+    cuit: '20-45371200-2',
+  },
+  { id: '5', alias: 'ana.torres', name: 'Ana Torres', cuit: '27-12345678-3' },
+  {
+    id: '6',
+    alias: 'pedro.gonzalez',
+    name: 'Pedro González',
+    cuit: '20-87654321-4',
+  },
+];
+
+const ModalTranferir = ({ isVisible, onClose, onConfirm, colors }) => {
+  const { balance, agregarGasto } = useAppContext();
   const [step, setStep] = useState(1); // 1: Alias/CVU, 2: Confirmar datos, 3: Monto
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [alias, setAlias] = useState('');
   const [amount, setAmount] = useState('');
-  const [reason, setReason] = useState('');
-  const [recentContacts, setRecentContacts] = useState([
-    { id: '1', alias: 'juan.perez', name: 'Juan Pérez', cuit: '20-12345678-9' },
-    {
-      id: '2',
-      alias: 'maria.gomez',
-      name: 'María Gómez',
-      cuit: '27-98765432-1',
-    },
-    {
-      id: '3',
-      alias: 'carlos.lopez',
-      name: 'Carlos López',
-      cuit: '23-45678901-2',
-    },
-    {
-      id: '4',
-      alias: 'julian.codina',
-      name: 'Julián Codina',
-      cuit: '20-45371200-2',
-    },
-  ]);
+  const [reason, setReason] = useState('Varios');
+  const [recentContacts, setRecentContacts] = useState([]);
+  const [selectedContact, setSelectedContact] = useState(null);
+
+  const selectRandomContact = () => {
+    const randomIndex = Math.floor(Math.random() * PREDEFINED_CONTACTS.length);
+    return PREDEFINED_CONTACTS[randomIndex];
+  };
+
   const transferReasons = [
     'Varios',
     'Pago de servicios',
@@ -49,17 +63,18 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
   ];
 
   const handleNumericInput = text => {
-    // Similar al de ModalIngresar pero sin el símbolo $
-    if (text === '.') {
+    let numericText = text.replace(/\$/g, '');
+
+    if (numericText === '.') {
       setAmount('0.');
       return;
     }
-    if (/^0[0-9]*$/.test(text)) {
-      const newValue = text.slice(-1);
+    if (/^0[0-9]*$/.test(numericText)) {
+      const newValue = numericText.slice(-1);
       setAmount(newValue);
       return;
     }
-    const numericValue = text
+    const numericValue = numericText
       .replace(/,/g, '.')
       .replace(/[^0-9.]/g, '')
       .replace(/(\..*)\./g, '$1');
@@ -74,42 +89,55 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
     }
   };
 
-  const handleContinue = () => {
+  const handleContinue = async () => {
     if (step === 1 && alias.trim() !== '') {
+      const randomContact = selectRandomContact();
+      setSelectedContact(randomContact);
       setStep(2);
     } else if (step === 2) {
       setStep(3);
     } else if (step === 3 && amount && reason) {
-      // Llamamos a onConfirm con los datos de la transferencia
+      if (!selectedContact) return;
+
       const transferData = {
-        amount: parseFloat(amount),
-        reason,
-        recipient: recentContacts.find(c => c.alias === alias)?.name || alias,
-        date: new Date().toISOString(),
+        id: Date.now().toString(),
+        descripcion: 'Tranferencia a ' + selectedContact.name,
+        monto: parseFloat(amount),
+        fecha: new Date().toISOString(),
+        categoria: reason,
       };
 
-      try {
-        // Llamamos a la función onConfirm que viene del componente padre
-        onConfirm(transferData);
+      if (balance > transferData.monto) {
+        try {
+          const updatedContacts = [
+            selectedContact,
+            ...recentContacts.filter(c => c.id !== selectedContact.id),
+          ].slice(0, 5);
 
-        // Reseteamos el formulario
-        setAlias('');
-        setAmount('');
-        setReason('Varios');
-        setStep(1);
-
-        // Cerramos el modal
-        onClose();
-      } catch (error) {
-        console.error('Error al procesar la transferencia:', error);
-        // Aquí podrías mostrar un mensaje de error al usuario
+          await AsyncStorage.setItem(
+            'recentContacts',
+            JSON.stringify(updatedContacts),
+          );
+          console.log('Contactos recientes actualizados');
+          setRecentContacts(updatedContacts);
+          agregarGasto(transferData);
+        } catch (error) {
+          console.error('Error al procesar la transferencia:', error);
+        }
       }
+      onConfirm(transferData);
+      setAlias('');
+      setAmount('');
+      setReason('Varios');
+      setSelectedContact(null);
+      setStep(1);
+      onClose();
     }
   };
 
   const handleContactSelect = contact => {
     setAlias(contact.alias);
-    // Si selecciona un contacto, saltamos directamente al paso 3
+    setSelectedContact(contact);
     setStep(3);
   };
 
@@ -117,7 +145,7 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
     switch (step) {
       case 1:
         return (
-          <View style={{ flex: 1 }}>
+          <View style={{ flex: 1, width: '100%' }}>
             <TextInput
               style={[
                 styles.input,
@@ -125,54 +153,67 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
                   color: colors.text,
                   borderColor: isInputFocused ? colors.primary : colors.border,
                   backgroundColor: colors.background,
+                  width: '100%',
+                  borderWidth: 1,
+                  textAlign: 'left',
+                  paddingVertical: 12,
+                  paddingHorizontal: 15,
+                  borderRadius: 8,
+                  marginBottom: 15,
                 },
               ]}
-              placeholder="Alias o CVU"
+              placeholder="Ingresa un alias o CVU"
               placeholderTextColor={colors.label}
               value={alias}
               onChangeText={setAlias}
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
+              onSubmitEditing={handleContinue}
+              returnKeyType="next"
             />
 
-            <Text
-              style={[
-                styles.sectionTitle,
-                { color: colors.text, marginTop: 10 },
-              ]}
-            >
-              Recientes
-            </Text>
-
             <View style={{ flex: 1 }}>
-              <FlatList
-                data={recentContacts}
-                keyExtractor={item => item.id}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.contactItem,
-                      {
-                        paddingVertical: 5,
-                      },
-                    ]}
-                    onPressIn={() => {
-                      return false;
-                    }}
-                    onPress={() => {
-                      handleContactSelect(item);
-                    }}
-                  >
-                    <Text
-                      style={[styles.contactAlias, { color: colors.primary }]}
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: colors.text, marginTop: 5, marginBottom: -5 },
+                ]}
+              >
+                Contactos recientes
+              </Text>
+
+              {recentContacts.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                  <Text style={[styles.emptyText, { color: colors.label }]}>
+                    No hay contactos recientes.
+                  </Text>
+                  <Text style={[styles.emptySubtext, { color: colors.label }]}>
+                    Ingresa un alias para comenzar.
+                  </Text>
+                </View>
+              ) : (
+                <FlatList
+                  data={recentContacts}
+                  keyExtractor={item => item.id}
+                  renderItem={({ item }) => (
+                    <TouchableOpacity
+                      style={[
+                        styles.contactItem,
+                        { borderBottomColor: colors.border },
+                      ]}
+                      onPress={() => handleContactSelect(item)}
                     >
-                      {item.alias}
-                    </Text>
-                    <Text style={{ color: colors.text }}>{item.name}</Text>
-                  </TouchableOpacity>
-                )}
-                style={styles.contactList}
-              />
+                      <Text
+                        style={[styles.contactAlias, { color: colors.primary }]}
+                      >
+                        {item.alias}
+                      </Text>
+                      <Text style={{ color: colors.text }}>{item.name}</Text>
+                    </TouchableOpacity>
+                  )}
+                  style={styles.contactList}
+                />
+              )}
             </View>
           </View>
         );
@@ -181,13 +222,14 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
         return (
           <>
             <View style={styles.infoContainer}>
+              {/* Espacio */}
+              <View style={{ height: 10 }} />
               <Text style={[styles.infoLabel, { color: colors.label }]}>
                 Alias:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                juan.carlos
+                {selectedContact?.alias || ''}
               </Text>
-
               <Text
                 style={[
                   styles.infoLabel,
@@ -197,9 +239,8 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
                 Nombre completo:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                Juan Carlos Pérez
+                {selectedContact?.name || ''}
               </Text>
-
               <Text
                 style={[
                   styles.infoLabel,
@@ -209,7 +250,7 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
                 CUIT/CUIL:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                20-12345678-9
+                {selectedContact?.cuit || ''}
               </Text>
             </View>
           </>
@@ -224,16 +265,9 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
                 { color: colors.text, textAlign: 'left' },
               ]}
             >
-              {recentContacts.find(c => c.alias === alias)?.name || alias}
-            </Text>
-
-            <Text
-              style={[
-                styles.sectionTitle,
-                { color: colors.text, marginTop: 10 },
-              ]}
-            >
-              Monto
+              {selectedContact
+                ? `¿Cuánto enviar a ${selectedContact.name}?`
+                : 'Ingrese el monto a transferir'}
             </Text>
 
             <TextInput
@@ -241,13 +275,12 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
                 styles.input,
                 {
                   color: colors.text,
-                  borderColor: colors.border,
-                  backgroundColor: colors.background,
+                  borderColor: colors.primary,
                 },
               ]}
-              placeholder="$"
+              placeholder="$0"
               placeholderTextColor={colors.label}
-              value={amount}
+              value={amount ? '$' + amount : ''}
               onChangeText={handleNumericInput}
               keyboardType="decimal-pad"
               autoFocus
@@ -257,31 +290,22 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
               Saldo disponible: ${parseFloat(balance || 0).toFixed(2)}
             </Text>
 
-            <Text
-              style={[
-                styles.sectionTitle,
-                { color: colors.text, marginTop: 10 },
-              ]}
-            >
-              Motivo
-            </Text>
-
-            <View
-              style={[
-                styles.pickerContainer,
-                {
-                  borderColor: colors.border,
-                  backgroundColor: colors.background,
-                },
-              ]}
-            >
+            <View style={[styles.pickerContainer]}>
+              <Text
+                style={[
+                  styles.sectionTitle,
+                  { color: colors.text, marginTop: 10, marginBottom: -5 },
+                ]}
+              >
+                Seleccioná un motivo
+              </Text>
               <Picker
                 selectedValue={reason}
                 onValueChange={itemValue => setReason(itemValue)}
                 style={{ color: colors.text }}
                 dropdownIconColor={colors.text}
               >
-                <Picker.Item label="Seleccionar motivo" value="" />
+                <Picker.Item label="Seleccionar motivo" value="Varios" />
                 {transferReasons.map((item, index) => (
                   <Picker.Item key={index} label={item} value={item} />
                 ))}
@@ -318,10 +342,20 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
   }, [isVisible, onClose, step]);
 
   useEffect(() => {
+    const loadRecentContacts = async () => {
+      try {
+        const savedContacts = await AsyncStorage.getItem('recentContacts');
+        console.log('Contactos recientes cargados:', savedContacts);
+        if (savedContacts) {
+          setRecentContacts(JSON.parse(savedContacts));
+        }
+      } catch (error) {
+        console.error('Error al cargar contactos recientes:', error);
+      }
+    };
+    loadRecentContacts();
     setReason('Varios');
   }, []);
-
-  if (!isVisible) return null;
 
   return (
     <KeyboardAvoidingView
@@ -363,7 +397,7 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
               ]}
               onPress={() => setStep(step - 1)}
             >
-              <Text style={{ color: colors.primary }}>
+              <Text style={{ color: colors.primary, fontWeight: '500' }}>
                 {step === 2 ? 'Cambiar alias' : 'Atrás'}
               </Text>
             </Pressable>
@@ -386,7 +420,7 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm, balance, colors }) => {
               (step === 3 && (!amount || !reason))
             }
           >
-            <Text style={{ color: colors.contrast }}>
+            <Text style={{ color: colors.contrast, fontWeight: '500' }}>
               {step === 2
                 ? 'Continuar'
                 : step === 3
@@ -409,6 +443,40 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 15,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    padding: 15,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginBottom: 5,
+    textAlign: 'center',
+  },
+  emptySubtext: {
+    fontSize: 14,
+    opacity: 0.8,
+    textAlign: 'center',
+  },
+  contactItem: {
+    paddingVertical: 5,
+    borderBottomWidth: 1,
+    paddingHorizontal: 5,
+  },
+  contactList: {
+    maxHeight: 200,
+    marginTop: 10,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 10,
+    color: '#333',
   },
   overlay: {
     position: 'absolute',
@@ -421,7 +489,7 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '90%',
     maxHeight: '90%',
-    minHeight: '50%',
+    minHeight: '60%',
     padding: 20,
     borderRadius: 12,
     elevation: 5,
@@ -437,16 +505,20 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   stepTitle: {
-    fontSize: 16,
-    fontWeight: '600',
+    fontSize: 15,
+    fontWeight: '400',
     marginBottom: 15,
   },
   input: {
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderRadius: 8,
-    padding: 12,
+    paddingHorizontal: 30,
     marginBottom: 10,
     fontSize: 16,
+    alignItems: 'center',
+    textAlign: 'center',
+    minWidth: '25%',
+    marginHorizontal: 'auto',
   },
   modalButtons: {
     flexDirection: 'row',
@@ -478,19 +550,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   balanceText: {
-    textAlign: 'right',
+    textAlign: 'center',
     marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 10,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 10,
-    overflow: 'hidden',
   },
 });
 
