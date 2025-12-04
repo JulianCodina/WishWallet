@@ -1,9 +1,9 @@
 export const lightColors = {
   primary: '#07945b',
   secondary: '#ddfff8ff',
-  background: '#f0faf6ff',
+  background: '#ecf7f3ff',
   card: '#fafcfcff',
-  border: '#bcf1e9ff',
+  border: '#b6eae3ff',
   text: '#000000',
   contrast: '#ffffffff',
   label: '#8aa6ae',

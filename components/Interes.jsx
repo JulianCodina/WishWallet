@@ -176,7 +176,7 @@ const Interes = () => {
             </Text>
             <Text style={[styles.interestEarned, { color: colors.primary }]}>
               {interestEarned > 0
-                ? 'Ganaste ' + formatCurrency(interestEarned) + ' de interés'
+                ? 'Generaste ' + formatCurrency(interestEarned)
                 : 'Retiralo cuando quieras'}
             </Text>
           </View>
@@ -200,7 +200,7 @@ const Interes = () => {
           ]}
           onPress={handleRetirar}
         >
-          <Text style={{ color: colors.contrast, fontWeight: '500' }}>
+          <Text style={{ color: colors.contrast, fontWeight: 'bold' }}>
             Retirar ahorros
           </Text>
         </Pressable>
@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginHorizontal: 16,
     borderWidth: 1,
+    borderBottomWidth: 3,
   },
   cardContent: {
     flexDirection: 'row',
@@ -347,7 +348,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   apyText: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: 'bold',
   },
   apyLabel: {

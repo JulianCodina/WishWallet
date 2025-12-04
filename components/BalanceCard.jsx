@@ -83,7 +83,6 @@ const BalanceCard = () => {
           styles.balanceCard,
           {
             backgroundColor: colors.card,
-            borderWidth: 1,
             borderColor: colors.border,
           },
         ]}
@@ -241,6 +240,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     margin: 20,
     gap: 10,
+    borderWidth: 1,
+    borderBottomWidth: 3,
   },
   clickableZone: {
     width: '100%',

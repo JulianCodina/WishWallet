@@ -101,6 +101,7 @@ const Ofertas = () => {
       padding: 20,
       marginRight: 15,
       borderWidth: 1,
+      borderBottomWidth: 2,
     },
     cardTop: {
       flexDirection: 'row',
