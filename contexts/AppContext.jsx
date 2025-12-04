@@ -199,7 +199,7 @@ export const AppProvider = ({ children }) => {
           showAlerta(
             'success',
             'Pago realizado',
-            `Se ha realizado un pago de $${gasto.monto} por ${gasto.nombre}`,
+            `Pagaste $${gasto.monto} por ${gasto.nombre}`,
           );
           const channelId = await notifee.createChannel({
             id: 'default',
@@ -207,7 +207,7 @@ export const AppProvider = ({ children }) => {
           });
           await notifee.displayNotification({
             title: 'Pagos y Servicios',
-            body: `Se ha realizado un pago de $${gasto.monto} por ${gasto.nombre}`,
+            body: `Pagaste $${gasto.monto} por ${gasto.nombre}`,
             android: {
               channelId,
               pressAction: {
@@ -228,7 +228,7 @@ export const AppProvider = ({ children }) => {
           showAlerta(
             'error',
             'Pago fallido',
-            `No tienes saldo suficiente para pagar ${gasto.nombre} ($${gasto.monto}).`,
+            `No tienes saldo para pagar ${gasto.nombre}.`,
           );
           const channelId = await notifee.createChannel({
             id: 'error_channel',
@@ -236,7 +236,7 @@ export const AppProvider = ({ children }) => {
           });
           await notifee.displayNotification({
             title: 'Pago fallido',
-            body: `No tienes saldo suficiente para pagar ${gasto.nombre} ($${gasto.monto})`,
+            body: `No tienes saldo para pagar ${gasto.nombre}`,
             android: {
               channelId,
               pressAction: {

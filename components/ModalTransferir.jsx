@@ -445,6 +445,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 15,
+    zIndex: 1000,
   },
   emptyContainer: {
     alignItems: 'center',

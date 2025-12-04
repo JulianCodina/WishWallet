@@ -10,6 +10,8 @@ import {
 import { StrictMode, useEffect } from 'react';
 import AppContext, { AppProvider, useAppContext } from './contexts/AppContext';
 import BalanceCard from './components/BalanceCard';
+import Ofertas from './components/Ofertas';
+import Interes from './components/Interes';
 import Alerta, { showAlerta } from './components/Alerta';
 import notifee from '@notifee/react-native';
 
@@ -123,6 +125,8 @@ function AppContent() {
           </Pressable>
         </View>
         <BalanceCard />
+        <Ofertas />
+        <Interes />
       </View>
       <Alerta />
     </StrictMode>

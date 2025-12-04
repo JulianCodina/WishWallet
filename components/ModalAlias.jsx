@@ -17,6 +17,7 @@ import RNPrint from 'react-native-print';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAppContext } from '../contexts/AppContext';
+import { showAlerta } from './Alerta';
 
 const ModalAlias = ({ isVisible, onClose }) => {
   const { colors, userData, cambiarAlias } = useAppContext();
@@ -52,6 +53,7 @@ const ModalAlias = ({ isVisible, onClose }) => {
     }
     cambiarAlias(alias);
     setIsEditing(false);
+    showAlerta('success', 'Cambio hecho', 'Tu nuevo alias ya funciona.');
   };
 
   const onShare = async () => {

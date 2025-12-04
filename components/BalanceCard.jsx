@@ -31,7 +31,7 @@ const BalanceCard = () => {
   const handleIngresar = () => {
     if (monto > 0) {
       if (parseFloat(monto) + parseFloat(balance) > 9999999) {
-        showAlerta('error', 'Error', 'Puede tener máximo $9.999.999');
+        showAlerta('error', 'Ups', 'Puede tener máximo $9.999.999');
       } else {
         console.log('Monto a ingresar:', monto);
         setMonto('');
@@ -39,7 +39,7 @@ const BalanceCard = () => {
         setIsIngresarVisible(false);
         showAlerta(
           'success',
-          'Éxito',
+          'Listo!',
           'La operación se completó correctamente.',
         );
       }
@@ -50,12 +50,12 @@ const BalanceCard = () => {
     const montoTransferencia = parseFloat(transferData.monto);
 
     if (montoTransferencia <= 0) {
-      showAlerta('error', 'Error', 'El monto debe ser mayor a 0');
+      showAlerta('error', 'Ups', 'El monto debe ser mayor a 0');
       return;
     }
 
     if (montoTransferencia > balance) {
-      showAlerta('error', 'Error', 'Saldo insuficiente');
+      showAlerta('error', 'Ups', 'Saldo insuficiente');
       return;
     }
 

@@ -134,6 +134,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
+    zIndex: 1000,
   },
   overlay: {
     position: 'absolute',
