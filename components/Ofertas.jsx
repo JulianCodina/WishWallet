@@ -55,7 +55,7 @@ const sampleOffers = [
     benefit: '2x1 en entradas',
     cap: 'Válido para 2D',
     expiry: '31/12/2023',
-    color: '#9C27B0',
+    color: '#d22cf0',
   },
 ];
 
@@ -69,7 +69,7 @@ const Ofertas = () => {
 
   const styles = StyleSheet.create({
     container: {
-      marginLeft: 10,
+      marginHorizontal: 0,
       marginVertical: 10,
     },
     modalOverlay: {
@@ -84,16 +84,9 @@ const Ofertas = () => {
       width: '100%',
       maxHeight: '80%',
     },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: 500,
-      marginBottom: 15,
-      paddingHorizontal: 5,
-      opacity: 0.8,
-    },
     scrollContainer: {
-      paddingBottom: 10,
-      marginHorizontal: 16,
+      marginLeft: 20,
+      paddingRight: 20,
     },
     card: {
       width: cardWidth,
@@ -189,9 +182,6 @@ const Ofertas = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>
-        Ofertas Exclusivas
-      </Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -223,7 +213,7 @@ const Ofertas = () => {
               </Text>
             </View>
             <Text
-              style={[styles.cardDescription, { color: colors.text }]}
+              style={[styles.cardDescription, { color: offer.color }]}
               numberOfLines={2}
             >
               {offer.description}

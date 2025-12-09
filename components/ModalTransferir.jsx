@@ -288,7 +288,11 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm }) => {
             />
 
             <Text style={[styles.balanceText, { color: colors.label }]}>
-              Saldo disponible: ${parseFloat(balance || 0).toFixed(2)}
+              Saldo disponible: $
+              {parseFloat(balance || 0).toLocaleString('es-AR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })}
             </Text>
 
             <View style={[styles.pickerContainer]}>

@@ -94,6 +94,7 @@ const Interes = () => {
         setInterestEarned(0);
         setModalVisible(false);
         setValue('');
+        agregarGasto(frasco);
       }
     }
   };
@@ -153,9 +154,6 @@ const Interes = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>
-        Frasco de interés
-      </Text>
       <Pressable
         style={[
           styles.card,
@@ -195,7 +193,6 @@ const Interes = () => {
             styles.retirarButton,
             {
               backgroundColor: colors.primary,
-              marginHorizontal: 16,
             },
           ]}
           onPress={handleRetirar}
@@ -304,21 +301,12 @@ const Interes = () => {
 
 const styles = StyleSheet.create({
   container: {
-    marginLeft: 10,
     marginVertical: 10,
-    flex: 1,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '500',
-    marginBottom: 15,
-    paddingHorizontal: 5,
-    opacity: 0.8,
   },
   card: {
     borderRadius: 12,
     padding: 16,
-    marginHorizontal: 16,
+    marginHorizontal: 20,
     borderWidth: 1,
     borderBottomWidth: 3,
   },
@@ -357,8 +345,8 @@ const styles = StyleSheet.create({
   },
   retirarButton: {
     marginTop: 15,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    marginHorizontal: 20,
+    paddingVertical: 5,
     borderRadius: 8,
     alignItems: 'center',
   },

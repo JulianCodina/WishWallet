@@ -14,8 +14,14 @@ import { useAppContext } from '../contexts/AppContext';
 import { showAlerta } from './Alerta';
 
 const BalanceCard = () => {
-  const { loading, balance, colors, sumarBalance, restarBalance } =
-    useAppContext();
+  const {
+    loading,
+    balance,
+    colors,
+    sumarBalance,
+    restarBalance,
+    agregarGasto,
+  } = useAppContext();
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [isIngresarVisible, setIsIngresarVisible] = useState(false);
   const [isTransferirVisible, setIsTransferirVisible] = useState(false);
@@ -33,10 +39,19 @@ const BalanceCard = () => {
       if (parseFloat(monto) + parseFloat(balance) > 9999999) {
         showAlerta('error', 'Ups', 'Puede tener máximo $9.999.999');
       } else {
+        const nuevoGasto = {
+          id: Date.now().toString(),
+          descripcion: 'Ingreso de dinero a la cuenta',
+          monto: monto,
+          fecha: new Date().toISOString(),
+          categoria: 'Ingreso',
+          result: 'profit',
+        };
         console.log('Monto a ingresar:', monto);
         setMonto('');
         sumarBalance(monto);
         setIsIngresarVisible(false);
+        agregarGasto(nuevoGasto);
         showAlerta(
           'success',
           'Listo!',
@@ -102,12 +117,12 @@ const BalanceCard = () => {
                     <Text
                       style={[styles.balanceAmountText, { color: colors.text }]}
                     >
-                      ${balanceEntero}
+                      ${balanceEntero.toLocaleString('es-AR')}
                     </Text>
                     <Text
                       style={[styles.balanceDecimals, { color: colors.label }]}
                     >
-                      .{centavos}
+                      {centavos}
                     </Text>
                   </>
                 ) : (
@@ -206,10 +221,8 @@ const BalanceCard = () => {
             setMonto('');
           }}
           onConfirm={handleIngresar}
-          balance={balance}
           value={monto}
           setValue={setMonto}
-          colors={colors}
         />
       )}
       {isTransferirVisible && (

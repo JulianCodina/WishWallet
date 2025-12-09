@@ -6,6 +6,7 @@ import {
   StatusBar,
   AppState,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { StrictMode, useEffect } from 'react';
 import AppContext, { AppProvider, useAppContext } from './contexts/AppContext';
@@ -14,6 +15,7 @@ import Ofertas from './components/Ofertas';
 import Interes from './components/Interes';
 import Alerta, { showAlerta } from './components/Alerta';
 import notifee from '@notifee/react-native';
+import GraphCard from './components/GraphCard';
 
 // Iconos
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -124,9 +126,16 @@ function AppContent() {
             <Text style={styles.headerButtonText}>Tema {tema}</Text>
           </Pressable>
         </View>
-        <BalanceCard />
-        <Ofertas />
-        <Interes />
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 24 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <BalanceCard />
+          <Ofertas />
+          <Interes />
+          <GraphCard />
+        </ScrollView>
       </View>
       <Alerta />
     </StrictMode>

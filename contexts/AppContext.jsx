@@ -31,6 +31,89 @@ export const AppProvider = ({ children }) => {
 
   const colors = tema === 'claro' ? lightColors : darkColors;
 
+  const defaultGastosDec2025 = [
+    {
+      id: 'g1',
+      descripcion: 'Salario',
+      monto: 250000,
+      fecha: '2025-12-01T09:00:00',
+      categoria: 'Ingresos',
+      result: 'profit',
+    },
+    {
+      id: 'g2',
+      descripcion: 'Supermercado',
+      monto: 42000,
+      fecha: '2025-12-02T18:30:00',
+      categoria: 'Comidas',
+      result: 'success',
+    },
+    {
+      id: 'g3',
+      descripcion: 'Transporte',
+      monto: 8000,
+      fecha: '2025-12-03T08:10:00',
+      categoria: 'Transporte',
+      result: 'success',
+    },
+    {
+      id: 'g4',
+      descripcion: 'Venta freelance',
+      monto: 60000,
+      fecha: '2025-12-04T14:00:00',
+      categoria: 'Ingresos',
+      result: 'profit',
+    },
+    {
+      id: 'g5',
+      descripcion: 'Restaurante',
+      monto: 25000,
+      fecha: '2025-12-05T21:15:00',
+      categoria: 'Comidas',
+      result: 'success',
+    },
+    {
+      id: 'g6',
+      descripcion: 'Internet',
+      monto: 18000,
+      fecha: '2025-12-07T10:00:00',
+      categoria: 'Servicios',
+      result: 'success',
+    },
+    {
+      id: 'g7',
+      descripcion: 'Regalo',
+      monto: 15000,
+      fecha: '2025-12-08T16:40:00',
+      categoria: 'Compras',
+      result: 'success',
+    },
+    {
+      id: 'g8',
+      descripcion: 'Intereses',
+      monto: 5000,
+      fecha: '2025-12-09T12:00:00',
+      categoria: 'Ingresos',
+      result: 'profit',
+    },
+    {
+      id: 'g9',
+      descripcion: 'Combustible',
+      monto: 20000,
+      fecha: '2025-12-10T08:20:00',
+      categoria: 'Transporte',
+      result: 'success',
+    },
+    {
+      id: 'g10',
+      descripcion: 'Farmacia',
+      monto: 12000,
+      fecha: '2025-12-11T19:05:00',
+      categoria: 'Salud',
+      result: 'success',
+    },
+  ];
+
   const cambiarTema = () => {
     setTema(prevTema => {
       const nuevoTema = prevTema === 'claro' ? 'oscuro' : 'claro';
@@ -120,8 +203,11 @@ export const AppProvider = ({ children }) => {
           const parsedGastos = JSON.parse(gastosStorage);
           setGastos(parsedGastos);
         } else {
-          setGastos([]);
-          await AsyncStorage.setItem('gastos', JSON.stringify([]));
+          setGastos(defaultGastosDec2025);
+          await AsyncStorage.setItem(
+            'gastos',
+            JSON.stringify(defaultGastosDec2025),
+          );
         }
         if (aliasStorage) {
           setUserData(prev => ({

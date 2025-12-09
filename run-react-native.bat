@@ -9,8 +9,8 @@ set ANDROID_HOME=%LOCALAPPDATA%\Android\Sdk
 set PATH=%PATH%;%ANDROID_HOME%\platform-tools;%ANDROID_HOME%\emulator;%ANDROID_HOME%\cmdline-tools\latest\bin
 
 echo.
-echo Iniciando emulador Pixel_7...
-start "" cmd /c "emulator -avd Pixel_7"
+echo Iniciando emulador Pixel_7 2...
+start "" cmd /c "emulator -avd Pixel_7(2)"
 
 echo.
 echo Esperando 15 segundos a que el emulador arranque...

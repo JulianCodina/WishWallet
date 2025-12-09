@@ -9,16 +9,11 @@ import {
   BackHandler,
   TouchableWithoutFeedback,
 } from 'react-native';
+import { useAppContext } from '../contexts/AppContext';
 
-const ModalIngresar = ({
-  isVisible,
-  onClose,
-  onConfirm,
-  balance,
-  value,
-  setValue,
-  colors,
-}) => {
+const ModalIngresar = ({ isVisible, onClose, onConfirm, value, setValue }) => {
+  const { balance, colors } = useAppContext();
+
   const handleNumericInput = (text, setValue) => {
     if (text === '.') {
       setValue('0.');
