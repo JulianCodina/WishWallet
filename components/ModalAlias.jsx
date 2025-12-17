@@ -6,11 +6,10 @@ import {
   Pressable,
   TextInput,
   TouchableWithoutFeedback,
-  Platform,
   KeyboardAvoidingView,
   Alert,
-  BackHandler,
   Share,
+  Modal,
 } from 'react-native';
 import Clipboard from '@react-native-clipboard/clipboard';
 import RNPrint from 'react-native-print';
@@ -19,27 +18,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useAppContext } from '../contexts/AppContext';
 import { showAlerta } from './Alerta';
 
-const ModalAlias = ({ isVisible, onClose }) => {
+function ModalAlias({ isVisible, setOpen }) {
   const { colors, userData, cambiarAlias } = useAppContext();
   const [isEditing, setIsEditing] = useState(false);
   const [alias, setAlias] = useState(userData?.alias || '');
-
-  useEffect(() => {
-    const backAction = () => {
-      if (isVisible) {
-        onClose();
-        return true;
-      }
-      return false;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, [isVisible, onClose]);
 
   const copyToClipboard = text => {
     Alert.alert('Copiado', 'Texto copiado al portapapeles');
@@ -116,154 +98,167 @@ const ModalAlias = ({ isVisible, onClose }) => {
   };
 
   useEffect(() => {
-    if (isVisible) {
-      setAlias(userData?.alias || '');
-      setIsEditing(false);
-    }
-  }, [isVisible, userData?.alias]);
+    setAlias(userData?.alias || '');
+    setIsEditing(false);
+  }, [userData?.alias]);
 
   return (
-    <View style={styles.overlay}>
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.centeredView}>
-          <TouchableWithoutFeedback>
-            <KeyboardAvoidingView
-              behavior="height"
-              style={[styles.modalView, { backgroundColor: colors.card }]}
-            >
-              <View style={styles.header}>
-                <Text style={[styles.title, { color: colors.text }]}>
-                  Tu Información
-                </Text>
-                <Pressable onPress={onClose} style={styles.closeButton}>
-                  <Icon name="close" size={24} color={colors.text} />
-                </Pressable>
-              </View>
+    <Modal
+      visible={isVisible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={() => setOpen(false)}
+    >
+      <View style={styles.overlay}>
+        <TouchableWithoutFeedback onPress={() => setOpen(false)}>
+          <View style={styles.centeredView}>
+            <TouchableWithoutFeedback>
+              <KeyboardAvoidingView
+                behavior="height"
+                style={[styles.modalView, { backgroundColor: colors.card }]}
+              >
+                <View style={styles.header}>
+                  <Text style={[styles.title, { color: colors.text }]}>
+                    Tu Información
+                  </Text>
+                  <Pressable
+                    onPress={() => setOpen(false)}
+                    style={styles.closeButton}
+                  >
+                    <Icon name="close" size={24} color={colors.text} />
+                  </Pressable>
+                </View>
 
-              <View style={styles.section}>
-                <Text style={[styles.subtitle, { color: colors.label }]}>
-                  Alias
-                </Text>
-                <View style={styles.row}>
-                  {isEditing ? (
-                    <View
-                      style={[
-                        styles.editContainer,
-                        { borderBottomColor: colors.text },
-                      ]}
-                    >
-                      <TextInput
+                <View style={styles.section}>
+                  <Text style={[styles.subtitle, { color: colors.label }]}>
+                    Alias
+                  </Text>
+                  <View style={styles.row}>
+                    {isEditing ? (
+                      <View
                         style={[
-                          styles.input,
-                          {
-                            color: colors.text,
-                            flex: 1,
-                            borderBottomColor: colors.border,
-                          },
+                          styles.editContainer,
+                          { borderBottomColor: colors.text },
                         ]}
-                        value={alias}
-                        onChangeText={setAlias}
-                        autoFocus
-                        placeholderTextColor={colors.label}
-                      />
+                      >
+                        <TextInput
+                          style={[
+                            styles.input,
+                            {
+                              color: colors.text,
+                              flex: 1,
+                              borderBottomColor: colors.border,
+                            },
+                          ]}
+                          value={alias}
+                          onChangeText={setAlias}
+                          autoFocus
+                          placeholderTextColor={colors.label}
+                        />
+                        <Pressable
+                          onPress={handleSaveAlias}
+                          style={styles.iconButton}
+                        >
+                          <Icon name="check" size={20} color={colors.primary} />
+                        </Pressable>
+                      </View>
+                    ) : (
+                      <Text
+                        style={[styles.text, { color: colors.text, flex: 1 }]}
+                      >
+                        {userData?.alias || 'No disponible'}
+                      </Text>
+                    )}
+                    {!isEditing && (
                       <Pressable
-                        onPress={handleSaveAlias}
+                        onPress={() => setIsEditing(true)}
                         style={styles.iconButton}
                       >
-                        <Icon name="check" size={20} color={colors.primary} />
+                        <Icon name="edit" size={20} color={colors.primary} />
                       </Pressable>
-                    </View>
-                  ) : (
+                    )}
+                    <Pressable
+                      onPress={() => copyToClipboard(userData?.alias)}
+                      style={styles.iconButton}
+                    >
+                      <Icon
+                        name="content-copy"
+                        size={20}
+                        color={colors.primary}
+                      />
+                    </Pressable>
+                  </View>
+                </View>
+
+                <View
+                  style={[styles.divider, { backgroundColor: colors.border }]}
+                />
+
+                <View style={styles.section}>
+                  <Text style={[styles.subtitle, { color: colors.label }]}>
+                    CVU
+                  </Text>
+                  <View style={styles.row}>
                     <Text
                       style={[styles.text, { color: colors.text, flex: 1 }]}
                     >
-                      {userData?.alias || 'No disponible'}
+                      {userData?.cvu || 'No disponible'}
                     </Text>
-                  )}
-                  {!isEditing && (
                     <Pressable
-                      onPress={() => setIsEditing(true)}
+                      onPress={() => copyToClipboard(userData?.cvu)}
                       style={styles.iconButton}
                     >
-                      <Icon name="edit" size={20} color={colors.primary} />
+                      <Icon
+                        name="content-copy"
+                        size={20}
+                        color={colors.primary}
+                      />
                     </Pressable>
-                  )}
-                  <Pressable
-                    onPress={() => copyToClipboard(userData?.alias)}
-                    style={styles.iconButton}
-                  >
-                    <Icon
-                      name="content-copy"
-                      size={20}
-                      color={colors.primary}
-                    />
-                  </Pressable>
+                  </View>
                 </View>
-              </View>
 
-              <View
-                style={[styles.divider, { backgroundColor: colors.border }]}
-              />
-
-              <View style={styles.section}>
-                <Text style={[styles.subtitle, { color: colors.label }]}>
-                  CVU
-                </Text>
-                <View style={styles.row}>
-                  <Text style={[styles.text, { color: colors.text, flex: 1 }]}>
-                    {userData?.cvu || 'No disponible'}
-                  </Text>
+                <View style={styles.buttonContainer}>
                   <Pressable
-                    onPress={() => copyToClipboard(userData?.cvu)}
-                    style={styles.iconButton}
-                  >
-                    <Icon
-                      name="content-copy"
-                      size={20}
-                      color={colors.primary}
-                    />
-                  </Pressable>
-                </View>
-              </View>
-
-              <View style={styles.buttonContainer}>
-                <Pressable
-                  style={[
-                    styles.actionButton,
-                    { backgroundColor: colors.primary },
-                  ]}
-                  onPress={onShare}
-                >
-                  <Text
                     style={[
-                      styles.actionButtonText,
-                      { color: colors.contrast },
+                      styles.actionButton,
+                      { backgroundColor: colors.primary },
                     ]}
+                    onPress={onShare}
                   >
-                    Compartir datos
-                  </Text>
-                </Pressable>
-                <Pressable
-                  style={[
-                    styles.actionButton,
-                    { borderColor: colors.primary, borderWidth: 1 },
-                  ]}
-                  onPress={onPrint}
-                >
-                  <Text
-                    style={[styles.actionButtonText, { color: colors.primary }]}
+                    <Text
+                      style={[
+                        styles.actionButtonText,
+                        { color: colors.contrast },
+                      ]}
+                    >
+                      Compartir datos
+                    </Text>
+                  </Pressable>
+                  <Pressable
+                    style={[
+                      styles.actionButton,
+                      { borderColor: colors.primary, borderWidth: 1 },
+                    ]}
+                    onPress={onPrint}
                   >
-                    Imprimir CVU
-                  </Text>
-                </Pressable>
-              </View>
-            </KeyboardAvoidingView>
-          </TouchableWithoutFeedback>
-        </View>
-      </TouchableWithoutFeedback>
-    </View>
+                    <Text
+                      style={[
+                        styles.actionButtonText,
+                        { color: colors.primary },
+                      ]}
+                    >
+                      Imprimir CVU
+                    </Text>
+                  </Pressable>
+                </View>
+              </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
   overlay: {

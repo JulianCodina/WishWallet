@@ -14,7 +14,7 @@ export const showAlerta = (type, title, message) => {
   });
 };
 
-const Alerta = () => {
+function Alerta() {
   const { colors } = useAppContext();
 
   const getAlertStyles = type => {
@@ -127,7 +127,7 @@ const Alerta = () => {
       topOffset={50}
     />
   );
-};
+}
 
 const styles = StyleSheet.create({
   iconContainer: {

@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Pressable,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ModalIngresar from './ModalIngresar';
@@ -13,7 +14,7 @@ import ModalAlias from './ModalAlias';
 import { useAppContext } from '../contexts/AppContext';
 import { showAlerta } from './Alerta';
 
-const BalanceCard = () => {
+function BalanceCard() {
   const {
     loading,
     balance,
@@ -92,10 +93,10 @@ const BalanceCard = () => {
   };
 
   return (
-    <>
+    <View style={styles.container}>
       <View
         style={[
-          styles.balanceCard,
+          styles.card,
           {
             backgroundColor: colors.card,
             borderColor: colors.border,
@@ -213,45 +214,40 @@ const BalanceCard = () => {
           </View>
         </View>
       </View>
-      {isIngresarVisible && (
-        <ModalIngresar
-          isVisible={isIngresarVisible}
-          onClose={() => {
-            setIsIngresarVisible(false);
-            setMonto('');
-          }}
-          onConfirm={handleIngresar}
-          value={monto}
-          setValue={setMonto}
-        />
-      )}
-      {isTransferirVisible && (
-        <ModalTransferir
-          isVisible={isTransferirVisible}
-          onClose={() => {
-            setIsTransferirVisible(false);
-            setTransferencia('');
-          }}
-          onConfirm={handleTransferir}
-        />
-      )}
-      {isAliasVisible && (
-        <ModalAlias
-          isVisible={isAliasVisible}
-          onClose={() => {
-            setIsAliasVisible(false);
-          }}
-        />
-      )}
-    </>
+
+      <ModalIngresar
+        isVisible={isIngresarVisible}
+        setOpen={setIsIngresarVisible}
+        onClose={() => {
+          setIsIngresarVisible(false);
+          setMonto('');
+        }}
+        onConfirm={handleIngresar}
+        value={monto}
+        setValue={setMonto}
+      />
+
+      <ModalTransferir
+        isVisible={isTransferirVisible}
+        setOpen={setIsTransferirVisible}
+        onClose={() => {
+          setIsTransferirVisible(false);
+          setTransferencia('');
+        }}
+        onConfirm={handleTransferir}
+      />
+      <ModalAlias isVisible={isAliasVisible} setOpen={setIsAliasVisible} />
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  balanceCard: {
+  container: {
+    margin: 20,
+  },
+  card: {
     padding: 20,
     borderRadius: 16,
-    margin: 20,
     gap: 10,
     borderWidth: 1,
     borderBottomWidth: 3,

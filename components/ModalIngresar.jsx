@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,15 +6,32 @@ import {
   Pressable,
   TextInput,
   KeyboardAvoidingView,
-  BackHandler,
   TouchableWithoutFeedback,
+  Modal,
 } from 'react-native';
 import { useAppContext } from '../contexts/AppContext';
 
-const ModalIngresar = ({ isVisible, onClose, onConfirm, value, setValue }) => {
-  const { balance, colors } = useAppContext();
+function ModalIngresar({
+  isVisible = false,
+  setOpen,
+  onClose,
+  onConfirm,
+  value,
+  setValue,
+}) {
+  const { colors } = useAppContext();
 
-  const handleNumericInput = (text, setValue) => {
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => {
+      inputRef.current?.focus?.(); // Forzamos un focus porque anda raro
+    }, 200);
+
+    return () => clearTimeout(t);
+  }, []);
+
+  const handleNumericInput = text => {
     if (text === '.') {
       setValue('0.');
       return;
@@ -30,7 +47,6 @@ const ModalIngresar = ({ isVisible, onClose, onConfirm, value, setValue }) => {
       .replace(/(\..*)\./g, '$1');
 
     const numberValue = numericValue === '' ? '' : parseFloat(numericValue);
-    const currentBalance = parseFloat(balance) || 0;
 
     if (
       numericValue === '' ||
@@ -42,83 +58,71 @@ const ModalIngresar = ({ isVisible, onClose, onConfirm, value, setValue }) => {
     }
   };
 
-  useEffect(() => {
-    const backAction = () => {
-      if (isVisible) {
-        onClose();
-        return true;
-      }
-      return false;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, [isVisible, onClose]);
-
-  if (!isVisible) return null;
-
   return (
-    <KeyboardAvoidingView
-      behavior="height"
-      style={styles.modalContainer}
-      pointerEvents="box-none"
+    <Modal
+      visible={isVisible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={() => setOpen(false)}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay} />
-      </TouchableWithoutFeedback>
+      <KeyboardAvoidingView
+        behavior="height"
+        style={styles.modalContainer}
+        pointerEvents="box-none"
+      >
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
 
-      <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-        <Text style={[styles.modalTitle, { color: colors.text }]}>
-          Ingresar monto
-        </Text>
+        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>
+            Ingresar monto
+          </Text>
 
-        <TextInput
-          style={[
-            styles.input,
-            {
-              color: colors.text,
-              borderColor: colors.border,
-              backgroundColor: colors.background,
-            },
-          ]}
-          placeholder="$0"
-          placeholderTextColor={colors.label}
-          value={value ? '$' + value : ''}
-          onChangeText={text => handleNumericInput(text, setValue)}
-          keyboardType="decimal-pad"
-          autoFocus
-        />
-
-        <View style={styles.modalButtons}>
-          <Pressable
+          <TextInput
+            ref={inputRef}
             style={[
-              styles.modalButton,
-              { marginRight: 10, borderColor: colors.primary },
+              styles.input,
+              {
+                color: colors.text,
+                borderColor: colors.border,
+                backgroundColor: colors.background,
+              },
             ]}
-            onPress={onClose}
-          >
-            <Text style={{ color: colors.primary, fontWeight: '500' }}>
-              Cancelar
-            </Text>
-          </Pressable>
+            placeholder="$0"
+            placeholderTextColor={colors.label}
+            value={value ? '$' + value : ''}
+            onChangeText={text => handleNumericInput(text)}
+            keyboardType="decimal-pad"
+          />
 
-          <Pressable
-            style={[styles.modalButton, { backgroundColor: colors.primary }]}
-            onPress={onConfirm}
-          >
-            <Text style={{ color: colors.contrast, fontWeight: '500' }}>
-              Aceptar
-            </Text>
-          </Pressable>
+          <View style={styles.modalButtons}>
+            <Pressable
+              style={[
+                styles.modalButton,
+                { marginRight: 10, borderColor: colors.primary },
+              ]}
+              onPress={onClose}
+            >
+              <Text style={{ color: colors.primary, fontWeight: '500' }}>
+                Cancelar
+              </Text>
+            </Pressable>
+
+            <Pressable
+              style={[styles.modalButton, { backgroundColor: colors.primary }]}
+              onPress={onConfirm}
+            >
+              <Text style={{ color: colors.contrast, fontWeight: '500' }}>
+                Aceptar
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
   modalContainer: {

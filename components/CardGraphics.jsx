@@ -9,7 +9,7 @@ import {
 import Svg, { Rect, Line, Text as SvgText } from 'react-native-svg';
 import { useAppContext } from '../contexts/AppContext';
 
-const GraphCard = () => {
+function GraphCard() {
   const { gastos, colors } = useAppContext();
   const [loading, setLoading] = useState(true);
   const [balanceData, setBalanceData] = useState([]);
@@ -115,13 +115,13 @@ const GraphCard = () => {
               <View style={styles.legendItem}>
                 <View style={[styles.legendColor, styles.legendGreen]} />
                 <Text style={[styles.legendText, { color: colors.text }]}>
-                  Ingresos
+                  Dias positivos
                 </Text>
               </View>
               <View style={styles.legendItem}>
                 <View style={[styles.legendColor, styles.legendRed]} />
                 <Text style={[styles.legendText, { color: colors.text }]}>
-                  Gastos
+                  Dias negativos
                 </Text>
               </View>
             </View>
@@ -136,33 +136,39 @@ const GraphCard = () => {
       </View>
     </>
   );
-};
+}
 
 const BalanceChart = ({ data, colors }) => {
   const screenWidth = Dimensions.get('window').width;
   const chartWidth = screenWidth - 80;
   const chartHeight = 150;
   const padding = { top: 10, bottom: 0, left: 5, right: 5 };
-  const totalDays = 31; // Mostrar siempre 31 días
+
+  const days28 = [2];
+  const days30 = [4, 6, 9, 11];
+  const month = new Date().getMonth() - 1;
+  const totalDays = days28.includes(month)
+    ? 28
+    : days30.includes(month)
+    ? 30
+    : 31;
 
   const graphWidth = chartWidth - padding.left - padding.right;
   const graphHeight = chartHeight - padding.top - padding.bottom;
 
-  // Crear un array con los 31 días
   const allDaysData = Array.from({ length: totalDays }, (_, i) => {
     const day = i + 1;
     const dayData = data.find(d => d.dia === day);
     return dayData || { dia: day, balance: 0 };
   });
 
-  // Encontrar el valor máximo para escalar
   const maxAbsValue = Math.max(
     ...allDaysData.map(d => Math.abs(d.balance)).filter(v => v > 0),
     100,
   );
 
   const barSpacing = graphWidth / totalDays;
-  const barWidth = Math.max(1.5, barSpacing - 2); // Barras más delgadas para mejor visualización
+  const barWidth = Math.max(1.5, barSpacing - 5);
   const zeroY = padding.top + graphHeight / 2;
 
   return (

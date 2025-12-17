@@ -1,6 +1,6 @@
 export const lightColors = {
   primary: '#07945b',
-  secondary: '#ddfff8ff',
+  secondary: '#cefaf1ff',
   background: '#ecf7f3ff',
   card: '#fafcfcff',
   border: '#b6eae3ff',
@@ -20,7 +20,7 @@ export const lightColors = {
 
 export const darkColors = {
   primary: '#0abf6e',
-  secondary: '#022e26ff',
+  secondary: '#232a27ff',
   background: '#121212',
   card: '#1a1a1aff',
   border: '#2b2b2bff',

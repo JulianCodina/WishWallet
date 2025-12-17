@@ -17,7 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const INTERES = 36;
 
-const Interes = () => {
+function Interes() {
   const { colors, balance, sumarBalance, restarBalance, agregarGasto } =
     useAppContext();
   const [ahorros, setAhorros] = useState(0);
@@ -297,7 +297,7 @@ const Interes = () => {
       </Modal>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

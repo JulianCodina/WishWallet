@@ -8,14 +8,16 @@ import {
   ActivityIndicator,
   ScrollView,
 } from 'react-native';
-import { StrictMode, useEffect } from 'react';
-import AppContext, { AppProvider, useAppContext } from './contexts/AppContext';
-import BalanceCard from './components/BalanceCard';
-import Ofertas from './components/Ofertas';
-import Interes from './components/Interes';
-import Alerta, { showAlerta } from './components/Alerta';
+import { StrictMode, useState, useEffect } from 'react';
+import { AppProvider, useAppContext } from './contexts/AppContext';
+import BalanceCard from './components/CardBalance';
+import Ofertas from './components/SectionOfertas';
+import Interes from './components/CardInteres';
+import Alerta from './components/Alerta';
 import notifee from '@notifee/react-native';
-import GraphCard from './components/GraphCard';
+import GraphCard from './components/CardGraphics';
+import Notificaciones from './components/ModalNotis';
+import NavBar from './components/NavBar';
 
 // Iconos
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -23,49 +25,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 function AppContent() {
   const { loading, tema, colors, cambiarTema, limpiarStorage } =
     useAppContext();
-
-  const styles = StyleSheet.create({
-    page: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    header: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 15,
-      gap: 10,
-      backgroundColor: colors.card,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
-    headerText: {
-      fontSize: 20,
-      color: colors.text,
-      fontWeight: 'bold',
-    },
-    notificationButton: {
-      backgroundColor: colors.secondary,
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: 4,
-      borderRadius: 20,
-      marginLeft: 'auto',
-    },
-    headerButton: {
-      backgroundColor: colors.secondary,
-      width: 105,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 10,
-      paddingVertical: 4,
-      borderRadius: 20,
-    },
-    headerButtonText: {
-      color: colors.primary,
-      fontWeight: '500',
-    },
-  });
+  const [isOpenNotis, setIsOpenNotis] = useState(false);
 
   // Notificaciones
   useEffect(() => {
@@ -108,22 +68,43 @@ function AppContent() {
   }
   return (
     <StrictMode>
-      <View style={styles.page}>
+      <View style={[styles.page, { backgroundColor: colors.background }]}>
         <StatusBar
           backgroundColor={colors.card}
           barStyle={tema === 'claro' ? 'dark-content' : 'light-content'}
         />
-        <View style={styles.header}>
+        <View
+          style={[
+            styles.header,
+            {
+              backgroundColor: colors.card,
+              borderBottomColor: colors.border,
+            },
+          ]}
+        >
           <Icon name="account-balance-wallet" size={25} color={colors.text} />
-          <Text style={styles.headerText}>Dream Wallet</Text>
-          <Pressable
-            style={styles.notificationButton}
+          <Text
+            style={[styles.headerText, { color: colors.text }]}
             onPress={() => limpiarStorage()}
+          >
+            Dream Wallet
+          </Text>
+          <Pressable
+            style={[
+              styles.notificationButton,
+              { backgroundColor: colors.secondary },
+            ]}
+            onPress={() => setIsOpenNotis(true)}
           >
             <Icon name="notifications-none" size={20} color={colors.primary} />
           </Pressable>
-          <Pressable onPress={() => cambiarTema()} style={styles.headerButton}>
-            <Text style={styles.headerButtonText}>Tema {tema}</Text>
+          <Pressable
+            onPress={() => cambiarTema()}
+            style={[styles.headerButton, { backgroundColor: colors.secondary }]}
+          >
+            <Text style={[styles.headerButtonText, { color: colors.primary }]}>
+              Tema {tema}
+            </Text>
           </Pressable>
         </View>
         <ScrollView
@@ -131,11 +112,13 @@ function AppContent() {
           contentContainerStyle={{ paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
         >
+          <Notificaciones isVisible={isOpenNotis} setOpen={setIsOpenNotis} />
           <BalanceCard />
           <Ofertas />
           <Interes />
           <GraphCard />
         </ScrollView>
+        <NavBar />
       </View>
       <Alerta />
     </StrictMode>
@@ -149,4 +132,43 @@ function App() {
     </AppProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  page: {
+    flex: 1,
+    paddingBottom: 70,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 15,
+    gap: 10,
+    borderBottomWidth: 1,
+    position: 'relative',
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  notificationButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 4,
+    borderRadius: 20,
+    marginLeft: 'auto',
+  },
+  headerButton: {
+    width: 105,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+  },
+  headerButtonText: {
+    fontWeight: '500',
+  },
+});
+
 export default App;

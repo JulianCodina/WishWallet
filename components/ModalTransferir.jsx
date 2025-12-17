@@ -6,10 +6,10 @@ import {
   Pressable,
   TextInput,
   KeyboardAvoidingView,
-  BackHandler,
   TouchableWithoutFeedback,
   FlatList,
   TouchableOpacity,
+  Modal,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -39,7 +39,7 @@ const PREDEFINED_CONTACTS = [
   },
 ];
 
-const ModalTranferir = ({ isVisible, onClose, onConfirm }) => {
+function ModalTranferir({ isVisible, setOpen, onClose, onConfirm }) {
   const { colors, balance, agregarGasto } = useAppContext();
   const [step, setStep] = useState(1); // 1: Alias/CVU, 2: Confirmar datos, 3: Monto
   const [isInputFocused, setIsInputFocused] = useState(false);
@@ -93,6 +93,7 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm }) => {
     if (step === 1 && alias.trim() !== '') {
       const randomContact = selectRandomContact();
       setSelectedContact(randomContact);
+      setAlias('');
       setStep(2);
     } else if (step === 2) {
       setStep(3);
@@ -325,28 +326,6 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm }) => {
   };
 
   useEffect(() => {
-    const backAction = () => {
-      if (isVisible) {
-        if (step > 1) {
-          setStep(step - 1);
-          return true;
-        } else {
-          onClose();
-          return true;
-        }
-      }
-      return false;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, [isVisible, onClose, step]);
-
-  useEffect(() => {
     const loadRecentContacts = async () => {
       try {
         const savedContacts = await AsyncStorage.getItem('recentContacts');
@@ -363,81 +342,88 @@ const ModalTranferir = ({ isVisible, onClose, onConfirm }) => {
   }, []);
 
   return (
-    <KeyboardAvoidingView
-      behavior="height"
-      style={styles.modalContainer}
-      pointerEvents="box-none"
+    <Modal
+      visible={isVisible}
+      animationType="fade"
+      transparent={true}
+      onRequestClose={() => setOpen(false)}
     >
-      <TouchableWithoutFeedback onPress={onClose}>
-        <View style={styles.overlay} />
-      </TouchableWithoutFeedback>
+      <KeyboardAvoidingView
+        behavior="height"
+        style={styles.modalContainer}
+        pointerEvents="box-none"
+      >
+        <TouchableWithoutFeedback onPress={onClose}>
+          <View style={styles.overlay} />
+        </TouchableWithoutFeedback>
 
-      <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-        <Text style={[styles.modalTitle, { color: colors.text }]}>
-          {step === 1
-            ? 'Transferir dinero'
-            : step === 2
-            ? 'Confirmar datos'
-            : 'Monto a transferir'}
-        </Text>
+        <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+          <Text style={[styles.modalTitle, { color: colors.text }]}>
+            {step === 1
+              ? 'Transferir dinero'
+              : step === 2
+              ? 'Confirmar datos'
+              : 'Monto a transferir'}
+          </Text>
 
-        {renderStep()}
+          <View style={{ flexGrow: 1, width: '100%' }}>{renderStep()}</View>
 
-        <View style={styles.modalButtons}>
-          {step === 1 ? (
+          <View style={styles.modalButtons}>
+            {step === 1 ? (
+              <Pressable
+                style={[
+                  styles.modalButton,
+                  { marginRight: 10, borderColor: colors.primary },
+                ]}
+                onPress={onClose}
+              >
+                <Text style={{ color: colors.primary }}>Cancelar</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                style={[
+                  styles.modalButton,
+                  { marginRight: 10, borderColor: colors.primary },
+                ]}
+                onPress={() => setStep(step - 1)}
+              >
+                <Text style={{ color: colors.primary, fontWeight: '500' }}>
+                  {step === 2 ? 'Cambiar alias' : 'Atrás'}
+                </Text>
+              </Pressable>
+            )}
+
             <Pressable
               style={[
                 styles.modalButton,
-                { marginRight: 10, borderColor: colors.primary },
+                {
+                  backgroundColor:
+                    (step === 1 && alias.trim() === '') ||
+                    (step === 3 && (!amount || !reason))
+                      ? `${colors.primary}80`
+                      : colors.primary,
+                },
               ]}
-              onPress={onClose}
+              onPress={handleContinue}
+              disabled={
+                (step === 1 && alias.trim() === '') ||
+                (step === 3 && (!amount || !reason))
+              }
             >
-              <Text style={{ color: colors.primary }}>Cancelar</Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              style={[
-                styles.modalButton,
-                { marginRight: 10, borderColor: colors.primary },
-              ]}
-              onPress={() => setStep(step - 1)}
-            >
-              <Text style={{ color: colors.primary, fontWeight: '500' }}>
-                {step === 2 ? 'Cambiar alias' : 'Atrás'}
+              <Text style={{ color: colors.contrast, fontWeight: '500' }}>
+                {step === 2
+                  ? 'Continuar'
+                  : step === 3
+                  ? 'Confirmar'
+                  : 'Continuar'}
               </Text>
             </Pressable>
-          )}
-
-          <Pressable
-            style={[
-              styles.modalButton,
-              {
-                backgroundColor:
-                  (step === 1 && alias.trim() === '') ||
-                  (step === 3 && (!amount || !reason))
-                    ? `${colors.primary}80`
-                    : colors.primary,
-              },
-            ]}
-            onPress={handleContinue}
-            disabled={
-              (step === 1 && alias.trim() === '') ||
-              (step === 3 && (!amount || !reason))
-            }
-          >
-            <Text style={{ color: colors.contrast, fontWeight: '500' }}>
-              {step === 2
-                ? 'Continuar'
-                : step === 3
-                ? 'Confirmar'
-                : 'Continuar'}
-            </Text>
-          </Pressable>
+          </View>
         </View>
-      </View>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
   modalContainer: {
@@ -495,9 +481,10 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '90%',
     maxHeight: '90%',
-    minHeight: '60%',
+    minHeight: '62%',
     padding: 20,
     borderRadius: 12,
+    flexDirection: 'column',
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
