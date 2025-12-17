@@ -95,46 +95,45 @@ function GraphCard() {
   const hasData = balanceData.some(d => d.balance !== 0);
 
   return (
-    <>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: colors.card, borderColor: colors.border },
+      ]}
+    >
       <View style={styles.header}>
-        <Text style={[styles.sectionTitle, { color: colors.text }]}>
+        <Text style={[styles.sectionTitle, { color: colors.label }]}>
           Balance del mes
         </Text>
         <Text style={[styles.verMas, { color: colors.primary }]}>Ver más</Text>
       </View>
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.card, borderColor: colors.border },
-        ]}
-      >
-        {hasData ? (
-          <>
-            <BalanceChart data={balanceData} colors={colors} />
-            <View style={styles.infoContainer}>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendColor, styles.legendGreen]} />
-                <Text style={[styles.legendText, { color: colors.text }]}>
-                  Dias positivos
-                </Text>
-              </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendColor, styles.legendRed]} />
-                <Text style={[styles.legendText, { color: colors.text }]}>
-                  Dias negativos
-                </Text>
-              </View>
+
+      {hasData ? (
+        <View style={styles.container}>
+          <BalanceChart data={balanceData} colors={colors} />
+          <View style={styles.infoContainer}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, styles.legendGreen]} />
+              <Text style={[styles.legendText, { color: '#179595ff' }]}>
+                Dias positivos
+              </Text>
             </View>
-          </>
-        ) : (
-          <View style={styles.noDataContainer}>
-            <Text style={[styles.noDataText, { color: colors.label }]}>
-              No hay movimientos este mes
-            </Text>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendColor, styles.legendRed]} />
+              <Text style={[styles.legendText, { color: '#ff6384ff' }]}>
+                Dias negativos
+              </Text>
+            </View>
           </View>
-        )}
-      </View>
-    </>
+        </View>
+      ) : (
+        <View style={styles.noDataContainer}>
+          <Text style={[styles.noDataText, { color: colors.label }]}>
+            No hay movimientos este mes
+          </Text>
+        </View>
+      )}
+    </View>
   );
 }
 
@@ -240,8 +239,19 @@ const BalanceChart = ({ data, colors }) => {
 };
 
 const styles = StyleSheet.create({
+  card: {
+    marginHorizontal: 20,
+    marginTop: 15,
+    marginBottom: 10,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderBottomWidth: 3,
+  },
+  container: {
+    padding: 15,
+  },
   header: {
-    marginTop: 20,
+    marginTop: 15,
     marginHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -254,15 +264,6 @@ const styles = StyleSheet.create({
   },
   verMas: {
     fontSize: 15,
-  },
-  container: {
-    marginHorizontal: 20,
-    marginTop: 15,
-    marginBottom: 10,
-    padding: 15,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderBottomWidth: 3,
   },
   chartContainer: {
     alignItems: 'center',
@@ -299,10 +300,10 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   legendGreen: {
-    backgroundColor: 'rgba(75, 192, 192, 1)',
+    backgroundColor: '#4bc0c0ff',
   },
   legendRed: {
-    backgroundColor: 'rgba(255, 99, 132, 1)',
+    backgroundColor: '#ff6384ff',
   },
   legendText: {
     fontSize: 11,

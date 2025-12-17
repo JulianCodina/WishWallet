@@ -18,6 +18,8 @@ import notifee from '@notifee/react-native';
 import GraphCard from './components/CardGraphics';
 import Notificaciones from './components/ModalNotis';
 import NavBar from './components/NavBar';
+import CardHistorial from './components/CardHistorial';
+import LinearGradient from 'react-native-linear-gradient';
 
 // Iconos
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -68,7 +70,11 @@ function AppContent() {
   }
   return (
     <StrictMode>
-      <View style={[styles.page, { backgroundColor: colors.background }]}>
+      <LinearGradient
+        colors={[colors.secondary, colors.background, colors.background]}
+        locations={[0, 0.3, 1]}
+        style={styles.page}
+      >
         <StatusBar
           backgroundColor={colors.card}
           barStyle={tema === 'claro' ? 'dark-content' : 'light-content'}
@@ -117,9 +123,10 @@ function AppContent() {
           <Ofertas />
           <Interes />
           <GraphCard />
+          <CardHistorial />
         </ScrollView>
         <NavBar />
-      </View>
+      </LinearGradient>
       <Alerta />
     </StrictMode>
   );
