@@ -106,7 +106,11 @@ function Alerta() {
           <Text style={[styles.title, { color: textColor }]}>{text1}</Text>
           <Text style={[styles.message, { color: textColor }]}>{text2}</Text>
         </View>
-        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+        <TouchableOpacity
+          style={styles.closeButton}
+          onPress={handleClose}
+          activeOpacity={0.6}
+        >
           <Icon name="close" size={20} color={textColor} />
         </TouchableOpacity>
       </View>

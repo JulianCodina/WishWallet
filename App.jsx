@@ -2,7 +2,7 @@ import {
   Text,
   StyleSheet,
   View,
-  Pressable,
+  TouchableOpacity,
   StatusBar,
   AppState,
   ActivityIndicator,
@@ -95,23 +95,25 @@ function AppContent() {
           >
             Dream Wallet
           </Text>
-          <Pressable
+          <TouchableOpacity
             style={[
               styles.notificationButton,
               { backgroundColor: colors.secondary },
             ]}
             onPress={() => setIsOpenNotis(true)}
+            activeOpacity={0.6}
           >
             <Icon name="notifications-none" size={20} color={colors.primary} />
-          </Pressable>
-          <Pressable
+          </TouchableOpacity>
+          <TouchableOpacity
             onPress={() => cambiarTema()}
             style={[styles.headerButton, { backgroundColor: colors.secondary }]}
+            activeOpacity={0.6}
           >
             <Text style={[styles.headerButtonText, { color: colors.primary }]}>
               Tema {tema}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
         <ScrollView
           style={{ flex: 1 }}
@@ -123,7 +125,7 @@ function AppContent() {
           <Ofertas />
           <Interes />
           <GraphCard />
-          <CardHistorial />
+          <CardHistorial type={'simple'} />
         </ScrollView>
         <NavBar />
       </LinearGradient>

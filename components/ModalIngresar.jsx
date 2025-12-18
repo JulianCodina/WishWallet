@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
+  TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
@@ -12,7 +12,7 @@ import {
 import { useAppContext } from '../contexts/AppContext';
 
 function ModalIngresar({
-  isVisible = false,
+  isVisible,
   setOpen,
   onClose,
   onConfirm,
@@ -24,12 +24,14 @@ function ModalIngresar({
   const inputRef = useRef(null);
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      inputRef.current?.focus?.(); // Forzamos un focus porque anda raro
-    }, 200);
+    if (isVisible) {
+      const t = setTimeout(() => {
+        inputRef.current?.focus?.();
+      }, 300); // Forzar focus porque anda raro
 
-    return () => clearTimeout(t);
-  }, []);
+      return () => clearTimeout(t);
+    }
+  }, [isVisible]);
 
   const handleNumericInput = text => {
     if (text === '.') {
@@ -85,38 +87,55 @@ function ModalIngresar({
               styles.input,
               {
                 color: colors.text,
-                borderColor: colors.border,
-                backgroundColor: colors.background,
+                borderColor: colors.primary,
               },
             ]}
             placeholder="$0"
             placeholderTextColor={colors.label}
-            value={value ? '$' + value : ''}
-            onChangeText={text => handleNumericInput(text)}
+            value={value ? `$${value}` : ''}
+            onChangeText={text => handleNumericInput(text, setValue)}
             keyboardType="decimal-pad"
+            autoFocus={true}
           />
 
           <View style={styles.modalButtons}>
-            <Pressable
+            <TouchableOpacity
               style={[
                 styles.modalButton,
-                { marginRight: 10, borderColor: colors.primary },
+                {
+                  marginRight: 10,
+                  borderColor: colors.primary,
+                  backgroundColor: colors.secondary,
+                },
               ]}
               onPress={onClose}
+              activeOpacity={0.6}
             >
-              <Text style={{ color: colors.primary, fontWeight: '500' }}>
+              <Text
+                style={{
+                  color: colors.primary,
+                }}
+              >
                 Cancelar
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
-              style={[styles.modalButton, { backgroundColor: colors.primary }]}
+            <TouchableOpacity
+              style={[
+                styles.modalButton,
+                {
+                  backgroundColor:
+                    value > 0 ? colors.primary : `${colors.primary}80`,
+                },
+              ]}
               onPress={onConfirm}
+              activeOpacity={0.6}
+              disabled={value <= 0}
             >
-              <Text style={{ color: colors.contrast, fontWeight: '500' }}>
-                Aceptar
+              <Text style={{ color: colors.contrast, fontWeight: 'bold' }}>
+                Confirmar
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>
@@ -147,34 +166,34 @@ const styles = StyleSheet.create({
     width: '70%',
     padding: 20,
     borderRadius: 12,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 15,
+    textAlign: 'center',
   },
   input: {
-    borderWidth: 1,
+    borderBottomWidth: 1,
     borderRadius: 8,
-    padding: 12,
-    marginBottom: 20,
+    paddingHorizontal: 30,
+    marginBottom: 10,
     fontSize: 16,
+    alignItems: 'center',
+    textAlign: 'center',
+    minWidth: '25%',
+    marginHorizontal: 'auto',
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    marginTop: '20',
   },
   modalButton: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 8,
     alignItems: 'center',
-    minWidth: 100,
     borderWidth: 1,
     borderColor: 'transparent',
   },

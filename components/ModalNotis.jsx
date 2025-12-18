@@ -3,14 +3,10 @@ import {
   Text,
   StyleSheet,
   View,
-  Pressable,
-  StatusBar,
-  AppState,
-  ActivityIndicator,
-  ScrollView,
   Modal,
   FlatList,
   Image,
+  TouchableOpacity,
 } from 'react-native';
 import { useAppContext } from '../contexts/AppContext';
 
@@ -47,12 +43,12 @@ function Notificaciones({ isVisible, setOpen }) {
               },
             ]}
           >
-            <Icon
-              name="arrow-back"
-              size={25}
-              color={colors.text}
+            <TouchableOpacity
+              activeOpacity={0.6}
               onPress={() => setOpen(false)}
-            />
+            >
+              <Icon name="arrow-back" size={25} color={colors.text} />
+            </TouchableOpacity>
             <Text style={[styles.notiHeaderText, { color: colors.text }]}>
               Notificaciones
             </Text>

@@ -3,12 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
+  TouchableOpacity,
   TextInput,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   FlatList,
-  TouchableOpacity,
   Modal,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
@@ -102,7 +101,8 @@ function ModalTranferir({ isVisible, setOpen, onClose, onConfirm }) {
 
       const transferData = {
         id: Date.now().toString(),
-        descripcion: 'Tranferencia a ' + selectedContact.name,
+        descripcion: 'Tranferencia a contacto',
+        origen: selectedContact.name,
         monto: parseFloat(amount),
         fecha: new Date().toISOString(),
         categoria: reason,
@@ -370,30 +370,40 @@ function ModalTranferir({ isVisible, setOpen, onClose, onConfirm }) {
 
           <View style={styles.modalButtons}>
             {step === 1 ? (
-              <Pressable
+              <TouchableOpacity
                 style={[
                   styles.modalButton,
-                  { marginRight: 10, borderColor: colors.primary },
+                  {
+                    marginRight: 10,
+                    borderColor: colors.primary,
+                    backgroundColor: colors.secondary,
+                  },
                 ]}
                 onPress={onClose}
+                activeOpacity={0.6}
               >
                 <Text style={{ color: colors.primary }}>Cancelar</Text>
-              </Pressable>
+              </TouchableOpacity>
             ) : (
-              <Pressable
+              <TouchableOpacity
                 style={[
                   styles.modalButton,
-                  { marginRight: 10, borderColor: colors.primary },
+                  {
+                    marginRight: 10,
+                    borderColor: colors.primary,
+                    backgroundColor: colors.secondary,
+                  },
                 ]}
                 onPress={() => setStep(step - 1)}
+                activeOpacity={0.6}
               >
                 <Text style={{ color: colors.primary, fontWeight: '500' }}>
                   {step === 2 ? 'Cambiar alias' : 'Atrás'}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
 
-            <Pressable
+            <TouchableOpacity
               style={[
                 styles.modalButton,
                 {
@@ -405,19 +415,20 @@ function ModalTranferir({ isVisible, setOpen, onClose, onConfirm }) {
                 },
               ]}
               onPress={handleContinue}
+              activeOpacity={0.6}
               disabled={
                 (step === 1 && alias.trim() === '') ||
                 (step === 3 && (!amount || !reason))
               }
             >
-              <Text style={{ color: colors.contrast, fontWeight: '500' }}>
+              <Text style={{ color: colors.contrast, fontWeight: 'bold' }}>
                 {step === 2
                   ? 'Continuar'
                   : step === 3
                   ? 'Confirmar'
                   : 'Continuar'}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </KeyboardAvoidingView>

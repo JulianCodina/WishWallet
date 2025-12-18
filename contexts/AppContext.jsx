@@ -38,6 +38,7 @@ export const AppProvider = ({ children }) => {
       monto: 250000,
       fecha: '2025-12-01T09:00:00',
       categoria: 'Ingresos',
+      origen: 'RRHH',
       result: 'profit',
     },
     {
@@ -46,6 +47,7 @@ export const AppProvider = ({ children }) => {
       monto: 42000,
       fecha: '2025-12-02T18:30:00',
       categoria: 'Comidas',
+      origen: 'Carrefour',
       result: 'success',
     },
     {
@@ -54,6 +56,7 @@ export const AppProvider = ({ children }) => {
       monto: 8000,
       fecha: '2025-12-03T08:10:00',
       categoria: 'Transporte',
+      origen: 'Uber',
       result: 'success',
     },
     {
@@ -62,6 +65,7 @@ export const AppProvider = ({ children }) => {
       monto: 60000,
       fecha: '2025-12-04T14:00:00',
       categoria: 'Ingresos',
+      origen: 'Freelancer',
       result: 'profit',
     },
     {
@@ -70,6 +74,7 @@ export const AppProvider = ({ children }) => {
       monto: 25000,
       fecha: '2025-12-05T21:15:00',
       categoria: 'Comidas',
+      origen: 'La Chimenea',
       result: 'success',
     },
     {
@@ -78,6 +83,7 @@ export const AppProvider = ({ children }) => {
       monto: 18000,
       fecha: '2025-12-07T10:00:00',
       categoria: 'Servicios',
+      origen: 'Gygared',
       result: 'success',
     },
     {
@@ -86,6 +92,7 @@ export const AppProvider = ({ children }) => {
       monto: 15000,
       fecha: '2025-12-08T16:40:00',
       categoria: 'Compras',
+      origen: 'Steam',
       result: 'success',
     },
     {
@@ -94,6 +101,7 @@ export const AppProvider = ({ children }) => {
       monto: 5000,
       fecha: '2025-12-09T12:00:00',
       categoria: 'Ingresos',
+      origen: 'Banco Nación',
       result: 'profit',
     },
     {
@@ -102,6 +110,7 @@ export const AppProvider = ({ children }) => {
       monto: 20000,
       fecha: '2025-12-10T08:20:00',
       categoria: 'Transporte',
+      origen: 'YPF',
       result: 'success',
     },
     {
@@ -110,7 +119,26 @@ export const AppProvider = ({ children }) => {
       monto: 12000,
       fecha: '2025-12-11T19:05:00',
       categoria: 'Salud',
+      origen: 'FarmaCity',
       result: 'success',
+    },
+    {
+      id: 'g11',
+      descripcion: 'Transferencia',
+      monto: 5000,
+      fecha: '2025-12-17T12:00:00',
+      categoria: 'Ingresos',
+      origen: 'Pablo',
+      result: 'profit',
+    },
+    {
+      id: 'g12',
+      descripcion: 'Transferencia',
+      monto: 3000,
+      fecha: '2025-12-18T13:00:00',
+      categoria: 'Ingresos',
+      origen: 'Mauricio',
+      result: 'profit',
     },
   ];
 
@@ -274,7 +302,8 @@ export const AppProvider = ({ children }) => {
         if (balance >= gasto.monto) {
           const nuevoGasto = {
             id: Date.now().toString(),
-            descripcion: gasto.categoria + ' ' + gasto.nombre,
+            descripcion: gasto.categoria,
+            origen: gasto.nombre,
             monto: gasto.monto,
             fecha: new Date().toISOString(),
             categoria: gasto.categoria,
@@ -304,7 +333,8 @@ export const AppProvider = ({ children }) => {
         } else {
           const nuevoGasto = {
             id: Date.now().toString(),
-            descripcion: gasto.categoria + ' ' + gasto.nombre,
+            descripcion: gasto.categoria,
+            origen: gasto.nombre,
             monto: gasto.monto,
             fecha: new Date().toISOString(),
             categoria: gasto.categoria,

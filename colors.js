@@ -26,7 +26,7 @@ export const darkColors = {
   border: '#2b2b2bff',
   text: '#ffffff',
   contrast: '#000000',
-  label: '#a0a0a0',
+  label: '#838383ff',
 
   error: '#2A1A1A',
   errorText: '#FCA5A5',

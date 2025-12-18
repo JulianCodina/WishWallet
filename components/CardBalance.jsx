@@ -3,8 +3,8 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
   ActivityIndicator,
+  TouchableOpacity,
   Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -28,7 +28,6 @@ function BalanceCard() {
   const [isTransferirVisible, setIsTransferirVisible] = useState(false);
   const [isAliasVisible, setIsAliasVisible] = useState(false);
   const [monto, setMonto] = useState('');
-  const [transferencia, setTransferencia] = useState('');
 
   const balanceEntero = Math.floor(balance);
   const centavos = Math.round((balance - balanceEntero) * 100)
@@ -42,8 +41,9 @@ function BalanceCard() {
       } else {
         const nuevoGasto = {
           id: Date.now().toString(),
-          descripcion: 'Ingreso de dinero a la cuenta',
+          descripcion: 'Ingreso de dinero',
           monto: monto,
+          origen: 'Banco Nación',
           fecha: new Date().toISOString(),
           categoria: 'Ingreso',
           result: 'profit',
@@ -144,70 +144,75 @@ function BalanceCard() {
             ) : (
               <ActivityIndicator size="small" color={colors.primary} />
             )}
-            <Pressable
+            <TouchableOpacity
               style={styles.visibilityButton}
               onPress={() => setIsBalanceVisible(!isBalanceVisible)}
+              activeOpacity={0.3}
             >
               <Icon
                 name={isBalanceVisible ? 'visibility' : 'visibility-off'}
                 size={20}
                 color={colors.label}
               />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.balanceButtons}>
           <View style={styles.balanceButtonContainer}>
-            <Pressable
+            <TouchableOpacity
               onPress={() => setIsIngresarVisible(true)}
               style={[
                 styles.primaryButton,
                 { backgroundColor: colors.primary },
               ]}
+              activeOpacity={0.6}
             >
               <Icon name="upload" size={25} color={colors.contrast} />
-            </Pressable>
+            </TouchableOpacity>
             <Text style={[styles.balanceButtonText, { color: colors.primary }]}>
               Ingresar
             </Text>
           </View>
           <View style={styles.balanceButtonContainer}>
-            <Pressable
+            <TouchableOpacity
               style={[
                 styles.primaryButton,
                 { backgroundColor: colors.primary },
               ]}
               onPress={() => setIsTransferirVisible(true)}
+              activeOpacity={0.6}
             >
               <Icon name="swap-horiz" size={25} color={colors.contrast} />
-            </Pressable>
+            </TouchableOpacity>
             <Text style={[styles.balanceButtonText, { color: colors.primary }]}>
               Transferir
             </Text>
           </View>
           <View style={styles.balanceButtonContainer}>
-            <Pressable
+            <TouchableOpacity
               style={[
                 styles.secondaryButton,
                 { backgroundColor: colors.secondary },
               ]}
               onPress={() => setIsAliasVisible(true)}
+              activeOpacity={0.6}
             >
               <Icon name="text-snippet" size={25} color={colors.primary} />
-            </Pressable>
+            </TouchableOpacity>
             <Text style={[styles.balanceButtonText, { color: colors.primary }]}>
               Mi alias
             </Text>
           </View>
           <View style={styles.balanceButtonContainer}>
-            <Pressable
+            <TouchableOpacity
               style={[
                 styles.secondaryButton,
                 { backgroundColor: colors.secondary },
               ]}
+              activeOpacity={0.6}
             >
               <Icon name="credit-card" size={25} color={colors.primary} />
-            </Pressable>
+            </TouchableOpacity>
             <Text style={[styles.balanceButtonText, { color: colors.primary }]}>
               Tarjeta
             </Text>
@@ -232,7 +237,6 @@ function BalanceCard() {
         setOpen={setIsTransferirVisible}
         onClose={() => {
           setIsTransferirVisible(false);
-          setTransferencia('');
         }}
         onConfirm={handleTransferir}
       />

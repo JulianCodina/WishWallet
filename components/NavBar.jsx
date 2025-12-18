@@ -22,6 +22,8 @@ const NavBar = () => {
       bottom: 0,
       left: 0,
       right: 0,
+      zIndex: 1000,
+      elevation: 10,
     },
     navItem: {
       alignItems: 'center',

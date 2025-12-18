@@ -89,12 +89,22 @@ const Ofertas = () => {
       paddingRight: 20,
     },
     card: {
+      position: 'relative',
       width: cardWidth,
       borderRadius: 15,
       padding: 20,
       marginRight: 15,
       borderWidth: 1,
       borderBottomWidth: 2,
+      overflow: 'hidden',
+    },
+    cardBG: {
+      position: 'absolute',
+      top: -20,
+      bottom: -20,
+      left: -20,
+      right: -20,
+      opacity: 1,
     },
     cardTop: {
       flexDirection: 'row',
@@ -193,12 +203,16 @@ const Ofertas = () => {
             style={[
               styles.card,
               {
-                backgroundColor: `${offer.color}15`,
+                backgroundColor: colors.card,
                 borderColor: `${offer.color}40`,
               },
             ]}
             onPress={() => handleCardPress(offer)}
+            activeOpacity={0.6}
           >
+            <View
+              style={[styles.cardBG, { backgroundColor: `${offer.color}15` }]}
+            />
             <View style={styles.cardTop}>
               <View
                 style={[
@@ -297,6 +311,7 @@ const Ofertas = () => {
                         { backgroundColor: selectedOffer.color },
                       ]}
                       onPress={onClose}
+                      activeOpacity={0.6}
                     >
                       <Text style={styles.closeButtonText}>Cerrar</Text>
                     </TouchableOpacity>

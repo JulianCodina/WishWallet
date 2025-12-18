@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   Pressable,
+  TouchableOpacity,
   TextInput,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
@@ -121,12 +122,6 @@ function ModalAlias({ isVisible, setOpen }) {
                   <Text style={[styles.title, { color: colors.text }]}>
                     Tu Información
                   </Text>
-                  <Pressable
-                    onPress={() => setOpen(false)}
-                    style={styles.closeButton}
-                  >
-                    <Icon name="close" size={24} color={colors.text} />
-                  </Pressable>
                 </View>
 
                 <View style={styles.section}>
@@ -218,12 +213,39 @@ function ModalAlias({ isVisible, setOpen }) {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                  <Pressable
+                  <TouchableOpacity
                     style={[
                       styles.actionButton,
-                      { backgroundColor: colors.primary },
+                      {
+                        borderColor: colors.primary,
+                        backgroundColor: colors.secondary,
+                      },
                     ]}
                     onPress={onShare}
+                    activeOpacity={0.6}
+                  >
+                    <Icon name={'share'} size={20} color={colors.primary} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.actionButton,
+                      {
+                        borderColor: colors.primary,
+                        backgroundColor: colors.secondary,
+                      },
+                    ]}
+                    onPress={onPrint}
+                  >
+                    <Icon name={'print'} size={20} color={colors.primary} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.actionButton,
+                      {
+                        backgroundColor: colors.primary,
+                      },
+                    ]}
+                    onPress={() => setOpen(false)}
                   >
                     <Text
                       style={[
@@ -231,25 +253,9 @@ function ModalAlias({ isVisible, setOpen }) {
                         { color: colors.contrast },
                       ]}
                     >
-                      Compartir datos
+                      Cerrar
                     </Text>
-                  </Pressable>
-                  <Pressable
-                    style={[
-                      styles.actionButton,
-                      { borderColor: colors.primary, borderWidth: 1 },
-                    ]}
-                    onPress={onPrint}
-                  >
-                    <Text
-                      style={[
-                        styles.actionButtonText,
-                        { color: colors.primary },
-                      ]}
-                    >
-                      Imprimir CVU
-                    </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
@@ -341,9 +347,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginHorizontal: 4,
+    borderWidth: 1,
   },
   actionButtonText: {
-    fontWeight: '500',
+    fontWeight: 'bold',
     fontSize: 14,
   },
   editContainer: {

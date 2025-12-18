@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Dimensions,
   ActivityIndicator,
+  TouchableOpacity,
 } from 'react-native';
 import Svg, { Rect, Line, Text as SvgText } from 'react-native-svg';
 import { useAppContext } from '../contexts/AppContext';
@@ -83,23 +84,40 @@ function GraphCard() {
 
   if (loading) {
     return (
-      <View style={[styles.container, { backgroundColor: colors.card }]}>
-        <ActivityIndicator size="small" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: colors.text }]}>
-          Cargando estadísticas...
-        </Text>
-      </View>
+      <TouchableOpacity
+        style={[
+          styles.card,
+          { backgroundColor: colors.card, borderColor: colors.border },
+        ]}
+        activeOpacity={0.9}
+      >
+        <View style={styles.header}>
+          <Text style={[styles.sectionTitle, { color: colors.label }]}>
+            Balance del mes
+          </Text>
+          <Text style={[styles.verMas, { color: colors.primary }]}>
+            Ver más
+          </Text>
+        </View>
+        <View style={styles.noDataContainer}>
+          <Text style={[styles.noDataText, { color: colors.label }]}>
+            Cargando datos ...
+          </Text>
+        </View>
+      </TouchableOpacity>
     );
   }
 
   const hasData = balanceData.some(d => d.balance !== 0);
 
   return (
-    <View
+    <TouchableOpacity
       style={[
         styles.card,
         { backgroundColor: colors.card, borderColor: colors.border },
       ]}
+      onPress={() => null}
+      activeOpacity={0.9}
     >
       <View style={styles.header}>
         <Text style={[styles.sectionTitle, { color: colors.label }]}>
@@ -133,7 +151,7 @@ function GraphCard() {
           </Text>
         </View>
       )}
-    </View>
+    </TouchableOpacity>
   );
 }
 
@@ -178,9 +196,8 @@ const BalanceChart = ({ data, colors }) => {
           y1={zeroY}
           x2={chartWidth - padding.right}
           y2={zeroY}
-          stroke={colors.border || '#444'}
+          stroke={colors.border}
           strokeWidth="1"
-          opacity="0.5"
         />
 
         {allDaysData.map((item, index) => {
@@ -274,7 +291,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   noDataContainer: {
-    height: 100,
+    height: 70,
     justifyContent: 'center',
     alignItems: 'center',
   },

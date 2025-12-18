@@ -3,7 +3,7 @@ import {
   View,
   Text,
   StyleSheet,
-  Pressable,
+  TouchableOpacity,
   Modal,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
@@ -54,8 +54,9 @@ function Interes() {
       if (balance >= numericValue) {
         const frasco = {
           id: Date.now().toString(),
-          descripcion: 'Ingreso al frasco de ahorro',
+          descripcion: 'Frasco de ahorro',
           monto: parseFloat(numericValue),
+          origen: 'WishWallet',
           fecha: new Date().toISOString(),
           categoria: 'Ahorros',
           result: 'success',
@@ -76,8 +77,9 @@ function Interes() {
       if (ahorros > 0) {
         const frasco = {
           id: Date.now().toString(),
-          descripcion: 'Retiro del frasco de ahorro',
-          monto: parseFloat(ahorros),
+          descripcion: 'Frasco de ahorro',
+          monto: parseFloat(ahorros.toFixed(2)),
+          origen: 'WishWallet',
           fecha: new Date().toISOString(),
           categoria: 'Ahorros',
           result: 'profit',
@@ -101,6 +103,13 @@ function Interes() {
 
   const handleNumericInput = (text, setter) => {
     const numericValue = text.replace(/[^0-9.]/g, '');
+
+    const numberPart = numericValue.split('.')[0];
+    if (numberPart && numberPart.length > 4) {
+      showAlerta('error', 'Ups', 'El monto máximo a invertir es de 9,999');
+      return;
+    }
+
     const parts = numericValue.split('.');
     if (parts.length > 2) return;
 
@@ -144,6 +153,17 @@ function Interes() {
     }
   }, [ahorros, ahorroInicial]);
 
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (modalVisible) {
+      const t = setTimeout(() => {
+        inputRef.current?.focus?.();
+      }, 200); // Forzar focus porque anda raro
+
+      return () => clearTimeout(t);
+    }
+  }, [modalVisible]);
+
   const formatCurrency = value => {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
@@ -154,12 +174,13 @@ function Interes() {
 
   return (
     <View style={styles.container}>
-      <Pressable
+      <TouchableOpacity
         style={[
           styles.card,
           { backgroundColor: colors.card, borderColor: colors.border },
         ]}
         onPress={handleDepositar}
+        activeOpacity={0.9}
       >
         <View style={styles.cardContent}>
           <View style={styles.iconContainer}>
@@ -185,10 +206,10 @@ function Interes() {
             <Text style={[styles.apyLabel, { color: colors.label }]}>TEA</Text>
           </View>
         </View>
-      </Pressable>
+      </TouchableOpacity>
 
       {ahorros > 0 && (
-        <Pressable
+        <TouchableOpacity
           style={[
             styles.retirarButton,
             {
@@ -196,11 +217,12 @@ function Interes() {
             },
           ]}
           onPress={handleRetirar}
+          activeOpacity={0.9}
         >
           <Text style={{ color: colors.contrast, fontWeight: 'bold' }}>
             Retirar ahorros
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       )}
 
       <Modal
@@ -238,7 +260,7 @@ function Interes() {
                   value={value ? `$${value}` : ''}
                   onChangeText={text => handleNumericInput(text, setValue)}
                   keyboardType="decimal-pad"
-                  autoFocus
+                  ref={inputRef}
                 />
                 <Text style={[styles.balanceText, { color: colors.label }]}>
                   Saldo disponible: ${parseFloat(balance || 0).toFixed(2)}
@@ -258,23 +280,24 @@ function Interes() {
             )}
 
             <View style={styles.modalButtons}>
-              <Pressable
+              <TouchableOpacity
                 style={[
                   styles.modalButton,
                   {
                     marginRight: 10,
                     borderColor: colors.primary,
-                    backgroundColor: 'transparent',
+                    backgroundColor: colors.secondary,
                   },
                 ]}
                 onPress={onClose}
+                activeOpacity={0.7}
               >
                 <Text style={{ color: colors.primary, fontWeight: '500' }}>
                   Cancelar
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
+              <TouchableOpacity
                 style={[
                   styles.modalButton,
                   {
@@ -285,12 +308,13 @@ function Interes() {
                   },
                 ]}
                 onPress={onConfirm}
+                activeOpacity={0.7}
                 disabled={modalMode === 'deposit' && !value}
               >
                 <Text style={{ color: colors.contrast, fontWeight: 'bold' }}>
                   {modalMode === 'deposit' ? 'Confirmar' : 'Retirar'}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -370,14 +394,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalContent: {
-    width: '75%',
+    width: '70%',
     padding: 20,
     borderRadius: 12,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
   },
   modalTitle: {
     fontSize: 18,
@@ -410,7 +429,7 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     marginTop: '20',
   },
   modalButton: {
