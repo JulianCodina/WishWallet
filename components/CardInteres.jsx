@@ -174,15 +174,17 @@ function Interes() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
+      <View
         style={[
           styles.card,
           { backgroundColor: colors.card, borderColor: colors.border },
         ]}
-        onPress={handleDepositar}
-        activeOpacity={0.9}
       >
-        <View style={styles.cardContent}>
+        <TouchableOpacity
+          style={styles.cardContent}
+          onPress={handleDepositar}
+          activeOpacity={0.8}
+        >
           <View style={styles.iconContainer}>
             <Icon name={'savings'} size={40} color={colors.primary} />
           </View>
@@ -205,8 +207,8 @@ function Interes() {
             </Text>
             <Text style={[styles.apyLabel, { color: colors.label }]}>TEA</Text>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </View>
 
       {ahorros > 0 && (
         <TouchableOpacity

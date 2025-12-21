@@ -34,16 +34,16 @@ function CardHistorial({ type }) {
         { backgroundColor: colors.card, borderColor: colors.border },
       ]}
     >
-      <View style={styles.header}>
+      <TouchableOpacity activeOpacity={0.7} style={styles.header}>
         <Text style={[styles.sectionTitle, { color: colors.label }]}>
           Ultimos movimientos
         </Text>
-        <TouchableOpacity>
+        <View activeOpacity={0.7}>
           <Text style={[styles.verMas, { color: colors.primary }]}>
             Ver más
           </Text>
-        </TouchableOpacity>
-      </View>
+        </View>
+      </TouchableOpacity>
       <View
         style={[
           styles.container,
@@ -411,15 +411,12 @@ const styles = StyleSheet.create({
   },
   detailLabel: {
     fontSize: 14,
-    opacity: 0.7,
   },
   detailValue: {
     fontSize: 14,
     fontWeight: '500',
     textAlign: 'right',
     maxWidth: '60%',
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
   },
 });
 

@@ -61,6 +61,7 @@ const NavBar = () => {
       <TouchableOpacity
         style={[styles.navItem, activeTab === 'home' && styles.selectedItem]}
         onPress={handleHomePress}
+        activeOpacity={0.7}
       >
         <Icon
           name="home"
@@ -77,6 +78,7 @@ const NavBar = () => {
       <TouchableOpacity
         style={[styles.navItem, activeTab === 'history' && styles.selectedItem]}
         onPress={handleHistoryPress}
+        activeOpacity={0.7}
       >
         <Icon
           name="history"
@@ -99,6 +101,7 @@ const NavBar = () => {
           activeTab === 'statistics' && styles.selectedItem,
         ]}
         onPress={handleStatsPress}
+        activeOpacity={0.7}
       >
         <Icon
           name="bar-chart"

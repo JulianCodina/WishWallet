@@ -208,7 +208,7 @@ const Ofertas = () => {
               },
             ]}
             onPress={() => handleCardPress(offer)}
-            activeOpacity={0.6}
+            activeOpacity={0.8}
           >
             <View
               style={[styles.cardBG, { backgroundColor: `${offer.color}15` }]}
@@ -311,7 +311,7 @@ const Ofertas = () => {
                         { backgroundColor: selectedOffer.color },
                       ]}
                       onPress={onClose}
-                      activeOpacity={0.6}
+                      activeOpacity={0.7}
                     >
                       <Text style={styles.closeButtonText}>Cerrar</Text>
                     </TouchableOpacity>

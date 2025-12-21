@@ -234,6 +234,7 @@ function ModalAlias({ isVisible, setOpen }) {
                         backgroundColor: colors.secondary,
                       },
                     ]}
+                    activeOpacity={0.6}
                     onPress={onPrint}
                   >
                     <Icon name={'print'} size={20} color={colors.primary} />
@@ -243,8 +244,10 @@ function ModalAlias({ isVisible, setOpen }) {
                       styles.actionButton,
                       {
                         backgroundColor: colors.primary,
+                        borderColor: colors.primary,
                       },
                     ]}
+                    activeOpacity={0.6}
                     onPress={() => setOpen(false)}
                   >
                     <Text

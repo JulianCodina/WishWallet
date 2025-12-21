@@ -91,14 +91,14 @@ function GraphCard() {
         ]}
         activeOpacity={0.9}
       >
-        <View style={styles.header}>
+        <TouchableOpacity activeOpacity={0.7} style={styles.header}>
           <Text style={[styles.sectionTitle, { color: colors.label }]}>
             Balance del mes
           </Text>
           <Text style={[styles.verMas, { color: colors.primary }]}>
             Ver más
           </Text>
-        </View>
+        </TouchableOpacity>
         <View style={styles.noDataContainer}>
           <Text style={[styles.noDataText, { color: colors.label }]}>
             Cargando datos ...
@@ -111,7 +111,7 @@ function GraphCard() {
   const hasData = balanceData.some(d => d.balance !== 0);
 
   return (
-    <TouchableOpacity
+    <View
       style={[
         styles.card,
         { backgroundColor: colors.card, borderColor: colors.border },
@@ -119,12 +119,12 @@ function GraphCard() {
       onPress={() => null}
       activeOpacity={0.9}
     >
-      <View style={styles.header}>
+      <TouchableOpacity activeOpacity={0.7} style={styles.header}>
         <Text style={[styles.sectionTitle, { color: colors.label }]}>
           Balance del mes
         </Text>
         <Text style={[styles.verMas, { color: colors.primary }]}>Ver más</Text>
-      </View>
+      </TouchableOpacity>
 
       {hasData ? (
         <View style={styles.container}>
@@ -151,7 +151,7 @@ function GraphCard() {
           </Text>
         </View>
       )}
-    </TouchableOpacity>
+    </View>
   );
 }
 
