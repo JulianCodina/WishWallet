@@ -4,6 +4,8 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useMemo,
+  useCallback,
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import notifee from '@notifee/react-native';
@@ -142,7 +144,7 @@ export const AppProvider = ({ children }) => {
     },
   ];
 
-  const cambiarTema = () => {
+  const cambiarTema = useCallback(() => {
     setTema(prevTema => {
       const nuevoTema = prevTema === 'claro' ? 'oscuro' : 'claro';
       AsyncStorage.setItem('tema', nuevoTema)
@@ -150,35 +152,44 @@ export const AppProvider = ({ children }) => {
         .catch(error => console.error('Error al guardar el tema:', error));
       return nuevoTema;
     });
-  };
+  }, []);
 
-  const sumarBalance = async suma => {
-    const nuevoBalance = balance + parseFloat(suma);
-    setBalance(nuevoBalance);
-    try {
-      await AsyncStorage.setItem('balance', nuevoBalance.toString());
-      console.log('Balance guardado en storage: ', nuevoBalance);
-    } catch (error) {
-      console.error('Error al guardar el balance:', error);
-    }
-  };
+  const sumarBalance = useCallback(
+    async suma => {
+      const nuevoBalance = balance + parseFloat(suma);
+      setBalance(nuevoBalance);
+      try {
+        await AsyncStorage.setItem('balance', nuevoBalance.toString());
+        console.log('Balance guardado en storage: ', nuevoBalance);
+      } catch (error) {
+        console.error('Error al guardar el balance:', error);
+      }
+    },
+    [balance],
+  );
 
-  const restarBalance = async resta => {
-    const nuevoBalance = parseFloat(balance) - parseFloat(resta);
-    setBalance(nuevoBalance);
-    await AsyncStorage.setItem('balance', nuevoBalance.toString())
-      .then(() => console.log('Balance guardado en storage: ', nuevoBalance))
-      .catch(error => console.error('Error al guardar el balance:', error));
-  };
+  const restarBalance = useCallback(
+    async resta => {
+      const nuevoBalance = parseFloat(balance) - parseFloat(resta);
+      setBalance(nuevoBalance);
+      await AsyncStorage.setItem('balance', nuevoBalance.toString())
+        .then(() => console.log('Balance guardado en storage: ', nuevoBalance))
+        .catch(error => console.error('Error al guardar el balance:', error));
+    },
+    [balance],
+  );
 
-  const agregarGasto = async gasto => {
-    setGastos(prevGastos => [...prevGastos, gasto]);
-    await AsyncStorage.setItem('gastos', JSON.stringify(gastos))
-      .then(() => console.log('Gastos guardados en storage: ', gastos))
-      .catch(error => console.error('Error al guardar los gastos:', error));
-  };
+  const agregarGasto = useCallback(async gasto => {
+    setGastos(prevGastos => {
+      const nuevosGastos = [...prevGastos, gasto];
+      AsyncStorage.setItem('gastos', JSON.stringify(nuevosGastos))
+        .then(() => console.log('Gastos guardados en storage: ', nuevosGastos))
+        .catch(error => console.error('Error al guardar los gastos:', error));
+      return nuevosGastos;
+    });
+  }, []);
 
-  const cambiarAlias = async nuevoAlias => {
+  const cambiarAlias = useCallback(async nuevoAlias => {
     setUserData(prev => ({
       ...prev,
       alias: nuevoAlias,
@@ -186,15 +197,15 @@ export const AppProvider = ({ children }) => {
     await AsyncStorage.setItem('alias', nuevoAlias)
       .then(() => console.log('Alias guardado:', nuevoAlias))
       .catch(error => console.error('Error al guardar el alias:', error));
-  };
+  }, []);
 
-  const limpiarStorage = () => {
+  const limpiarStorage = useCallback(() => {
     AsyncStorage.clear();
     setBalance(0);
     setTema(tema);
     setGastos([]);
     console.log('Storage limpio');
-  };
+  }, [tema]);
 
   // Carga de Storage
   useEffect(() => {
@@ -373,22 +384,38 @@ export const AppProvider = ({ children }) => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [loading, balance, gastos]);
+  }, [loading, balance, gastos, agregarGasto, restarBalance]);
 
-  const valorContexto = {
-    loading,
-    tema,
-    colors,
-    balance,
-    gastos,
-    userData,
-    cambiarTema,
-    sumarBalance,
-    restarBalance,
-    agregarGasto,
-    limpiarStorage,
-    cambiarAlias,
-  };
+  const valorContexto = useMemo(
+    () => ({
+      loading,
+      tema,
+      colors,
+      balance,
+      gastos,
+      userData,
+      cambiarTema,
+      sumarBalance,
+      restarBalance,
+      agregarGasto,
+      limpiarStorage,
+      cambiarAlias,
+    }),
+    [
+      loading,
+      tema,
+      colors,
+      balance,
+      gastos,
+      userData,
+      cambiarTema,
+      sumarBalance,
+      restarBalance,
+      agregarGasto,
+      limpiarStorage,
+      cambiarAlias,
+    ],
+  );
 
   return (
     <AppContext.Provider value={valorContexto}>{children}</AppContext.Provider>

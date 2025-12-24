@@ -6,23 +6,25 @@ import {
   StatusBar,
   AppState,
   ActivityIndicator,
-  ScrollView,
 } from 'react-native';
-import { StrictMode, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { AppProvider, useAppContext } from './contexts/AppContext';
-import BalanceCard from './components/CardBalance';
-import Ofertas from './components/SectionOfertas';
-import Interes from './components/CardInteres';
 import Alerta from './components/Alerta';
 import notifee from '@notifee/react-native';
-import GraphCard from './components/CardGraphics';
-import Notificaciones from './components/ModalNotis';
 import NavBar from './components/NavBar';
-import CardHistorial from './components/CardHistorial';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import LinearGradient from 'react-native-linear-gradient';
+
+// Pages
+import PageHome from './pages/PageHome';
+import PageHistory from './pages/PageHistory';
+import PageStatistics from './pages/PageStatistics';
 
 // Iconos
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
+const Stack = createNativeStackNavigator();
 
 function AppContent() {
   const { loading, tema, colors, cambiarTema, limpiarStorage } =
@@ -68,69 +70,76 @@ function AppContent() {
       </View>
     );
   }
+
   return (
-    <StrictMode>
-      <LinearGradient
-        colors={[colors.secondary, colors.background, colors.background]}
-        locations={[0, 0.3, 1]}
-        style={styles.page}
+    <LinearGradient
+      colors={[colors.secondary, colors.background, colors.background]}
+      locations={[0, 0.3, 1]}
+      style={{ flex: 1 }}
+    >
+      <StatusBar
+        backgroundColor={colors.card}
+        barStyle={tema === 'claro' ? 'dark-content' : 'light-content'}
+      />
+      <View
+        style={[
+          styles.header,
+          {
+            backgroundColor: colors.card,
+            borderBottomColor: colors.border,
+          },
+        ]}
       >
-        <StatusBar
-          backgroundColor={colors.card}
-          barStyle={tema === 'claro' ? 'dark-content' : 'light-content'}
-        />
-        <View
+        <Icon name="account-balance-wallet" size={25} color={colors.text} />
+        <Text
+          style={[styles.headerText, { color: colors.text }]}
+          onPress={() => limpiarStorage()}
+        >
+          Dream Wallet
+        </Text>
+        <TouchableOpacity
           style={[
-            styles.header,
-            {
-              backgroundColor: colors.card,
-              borderBottomColor: colors.border,
-            },
+            styles.notificationButton,
+            { backgroundColor: colors.secondary },
           ]}
+          onPress={() => setIsOpenNotis(true)}
+          activeOpacity={0.6}
         >
-          <Icon name="account-balance-wallet" size={25} color={colors.text} />
-          <Text
-            style={[styles.headerText, { color: colors.text }]}
-            onPress={() => limpiarStorage()}
-          >
-            Dream Wallet
+          <Icon name="notifications-none" size={20} color={colors.primary} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => cambiarTema()}
+          style={[styles.headerButton, { backgroundColor: colors.secondary }]}
+          activeOpacity={0.6}
+        >
+          <Text style={[styles.headerButtonText, { color: colors.primary }]}>
+            Tema {tema}
           </Text>
-          <TouchableOpacity
-            style={[
-              styles.notificationButton,
-              { backgroundColor: colors.secondary },
-            ]}
-            onPress={() => setIsOpenNotis(true)}
-            activeOpacity={0.6}
-          >
-            <Icon name="notifications-none" size={20} color={colors.primary} />
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => cambiarTema()}
-            style={[styles.headerButton, { backgroundColor: colors.secondary }]}
-            activeOpacity={0.6}
-          >
-            <Text style={[styles.headerButtonText, { color: colors.primary }]}>
-              Tema {tema}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          showsVerticalScrollIndicator={false}
+        </TouchableOpacity>
+      </View>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: colors.background },
+          }}
         >
-          <Notificaciones isVisible={isOpenNotis} setOpen={setIsOpenNotis} />
-          <BalanceCard />
-          <Ofertas />
-          <Interes />
-          <GraphCard />
-          <CardHistorial type={'simple'} />
-        </ScrollView>
+          <Stack.Screen name="Home">
+            {props => (
+              <PageHome
+                {...props}
+                isOpenNotis={isOpenNotis}
+                setIsOpenNotis={setIsOpenNotis}
+              />
+            )}
+          </Stack.Screen>
+          <Stack.Screen name="History" component={PageHistory} />
+          <Stack.Screen name="Statistics" component={PageStatistics} />
+        </Stack.Navigator>
         <NavBar />
-      </LinearGradient>
+      </NavigationContainer>
       <Alerta />
-    </StrictMode>
+    </LinearGradient>
   );
 }
 
@@ -143,10 +152,6 @@ function App() {
 }
 
 const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    paddingBottom: 70,
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -17,8 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import noResult from '../public/noresult.png';
 
 function Notificaciones({ isVisible, setOpen }) {
-  const { loading, tema, colors, cambiarTema, limpiarStorage, gastos } =
-    useAppContext();
+  const { colors, gastos } = useAppContext();
 
   return (
     <Modal
