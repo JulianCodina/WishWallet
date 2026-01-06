@@ -8,14 +8,20 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import { useAppContext } from '../contexts/AppContext';
+import { useNavigation } from '@react-navigation/native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
+// Imagenes
+import noResult from '../public/noresult.png';
+
 function CardHistorial({ type }) {
-  const { gastos, colors, loading } = useAppContext();
+  const { gastos, colors, setActiveTab } = useAppContext();
   const [displayGastos, setDisplayGastos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTransaction, setSelectedTransaction] = useState(null);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (gastos && Array.isArray(gastos)) {
@@ -34,15 +40,30 @@ function CardHistorial({ type }) {
         { backgroundColor: colors.card, borderColor: colors.border },
       ]}
     >
-      <TouchableOpacity activeOpacity={0.7} style={styles.header}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        style={[styles.header, { display: type == 'simple' ? 'flex' : 'none' }]}
+        onPress={() => {
+          setActiveTab('history');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'History' }],
+          });
+        }}
+      >
         <Text style={[styles.sectionTitle, { color: colors.label }]}>
           Ultimos movimientos
         </Text>
-        <View activeOpacity={0.7}>
-          <Text style={[styles.verMas, { color: colors.primary }]}>
-            Ver más
-          </Text>
-        </View>
+        <Text
+          style={[
+            styles.verMas,
+            {
+              color: colors.primary,
+            },
+          ]}
+        >
+          Ver más
+        </Text>
       </TouchableOpacity>
       <View
         style={[
@@ -76,9 +97,9 @@ function CardHistorial({ type }) {
                 <View style={styles.itemHeader}>
                   <Text style={[styles.itemTitle, { color: colors.text }]}>
                     {item.result == 'profit'
-                      ? 'Recibiste de ' + item.origen
+                      ? 'Ingreso de ' + item.origen
                       : item.result == 'success'
-                      ? 'Pagaste a ' + item.origen
+                      ? 'Pago a ' + item.origen
                       : 'Pago rechazado'}
                   </Text>
                   <Text
@@ -90,7 +111,11 @@ function CardHistorial({ type }) {
                       },
                     ]}
                   >
-                    ${item.monto}
+                    {item.result == 'profit'
+                      ? '+$' + item.monto
+                      : item.result == 'success'
+                      ? '-$' + item.monto
+                      : '$' + item.monto}
                   </Text>
                 </View>
                 <View style={styles.itemHeader}>
@@ -98,9 +123,9 @@ function CardHistorial({ type }) {
                     Por {item.descripcion}
                   </Text>
                   <Text style={[{ color: colors.label }]}>
-                    {new Date(item.fecha).toLocaleDateString('es-AR', {
-                      day: '2-digit',
-                      month: '2-digit',
+                    {new Date(item.fecha).toLocaleTimeString('es-AR', {
+                      hour: '2-digit',
+                      minute: '2-digit',
                     })}
                   </Text>
                 </View>
@@ -145,7 +170,10 @@ function CardHistorial({ type }) {
               <View style={styles.modalBody}>
                 <View style={styles.amountContainer}>
                   <Text style={[styles.amount, { color: colors.text }]}>
-                    ${selectedTransaction.monto.toFixed(2)}
+                    $
+                    {parseFloat(selectedTransaction.monto) % 1 === 0
+                      ? parseFloat(selectedTransaction.monto)
+                      : parseFloat(selectedTransaction.monto).toFixed(2)}
                   </Text>
                   <View style={[styles.statusBadge]}>
                     <Text

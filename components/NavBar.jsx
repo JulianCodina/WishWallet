@@ -7,8 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const NavBar = () => {
-  const { colors } = useAppContext();
-  const [activeTab, setActiveTab] = useState('home');
+  const { colors, activeTab, setActiveTab } = useAppContext();
 
   const navigation = useNavigation();
 

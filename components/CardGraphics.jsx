@@ -9,11 +9,14 @@ import {
 } from 'react-native';
 import Svg, { Rect, Line, Text as SvgText } from 'react-native-svg';
 import { useAppContext } from '../contexts/AppContext';
+import { useNavigation } from '@react-navigation/native';
 
-function GraphCard() {
-  const { gastos, colors } = useAppContext();
+function GraphCard(type) {
+  const { gastos, colors, setActiveTab } = useAppContext();
   const [loading, setLoading] = useState(true);
   const [balanceData, setBalanceData] = useState([]);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     if (!gastos) {
@@ -91,7 +94,20 @@ function GraphCard() {
         ]}
         activeOpacity={0.9}
       >
-        <TouchableOpacity activeOpacity={0.7} style={styles.header}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={[
+            styles.header,
+            { display: type == 'simple' ? 'flex' : 'none' },
+          ]}
+          onPress={() => {
+            setActiveTab('statistics');
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Statistics' }],
+            });
+          }}
+        >
           <Text style={[styles.sectionTitle, { color: colors.label }]}>
             Balance del mes
           </Text>
@@ -119,7 +135,17 @@ function GraphCard() {
       onPress={() => null}
       activeOpacity={0.9}
     >
-      <TouchableOpacity activeOpacity={0.7} style={styles.header}>
+      <TouchableOpacity
+        activeOpacity={0.7}
+        style={[styles.header, { display: type == 'simple' ? 'flex' : 'none' }]}
+        onPress={() => {
+          setActiveTab('statistics');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Statistics' }],
+          });
+        }}
+      >
         <Text style={[styles.sectionTitle, { color: colors.label }]}>
           Balance del mes
         </Text>

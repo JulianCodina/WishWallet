@@ -204,6 +204,7 @@ function ModalTranferir({ isVisible, setOpen, onClose, onConfirm }) {
                         { borderBottomColor: colors.border },
                       ]}
                       onPress={() => handleContactSelect(item)}
+                      activeOpacity={0.7}
                     >
                       <Text
                         style={[styles.contactAlias, { color: colors.primary }]}

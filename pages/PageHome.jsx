@@ -25,7 +25,7 @@ function PageHome({ isOpenNotis, setIsOpenNotis }) {
         <BalanceCard />
         <Ofertas />
         <Interes />
-        <GraphCard />
+        <GraphCard type={'simple'} />
         <CardHistorial type={'simple'} />
       </ScrollView>
     </LinearGradient>
