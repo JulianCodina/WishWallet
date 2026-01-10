@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Modal,
+  Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import ModalIngresar from './ModalIngresar';
@@ -14,7 +15,9 @@ import ModalAlias from './ModalAlias';
 import { useAppContext } from '../contexts/AppContext';
 import { showAlerta } from './Alerta';
 
-function BalanceCard() {
+import { useNavigation } from '@react-navigation/native';
+
+function BalanceCard({ setOpen }) {
   const {
     loading,
     balance,
@@ -22,12 +25,15 @@ function BalanceCard() {
     sumarBalance,
     restarBalance,
     agregarGasto,
+    setActiveTab,
   } = useAppContext();
   const [isBalanceVisible, setIsBalanceVisible] = useState(true);
   const [isIngresarVisible, setIsIngresarVisible] = useState(false);
   const [isTransferirVisible, setIsTransferirVisible] = useState(false);
   const [isAliasVisible, setIsAliasVisible] = useState(false);
   const [monto, setMonto] = useState('');
+
+  const navigation = useNavigation();
 
   const balanceEntero = Math.floor(balance);
   const centavos = Math.round((balance - balanceEntero) * 100)
@@ -103,7 +109,16 @@ function BalanceCard() {
           },
         ]}
       >
-        <View style={styles.clickableZone}>
+        <Pressable
+          style={styles.clickableZone}
+          onPress={() => {
+            setActiveTab('history');
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'History' }],
+            });
+          }}
+        >
           <View style={styles.balanceTitleContainer}>
             <Text style={[styles.balanceTitle, { color: colors.label }]}>
               Disponible
@@ -156,7 +171,7 @@ function BalanceCard() {
               />
             </TouchableOpacity>
           </View>
-        </View>
+        </Pressable>
         <View style={styles.balanceButtons}>
           <View style={styles.balanceButtonContainer}>
             <TouchableOpacity
@@ -210,6 +225,7 @@ function BalanceCard() {
                 { backgroundColor: colors.secondary },
               ]}
               activeOpacity={0.6}
+              onPress={() => setOpen(true)}
             >
               <Icon name="credit-card" size={25} color={colors.primary} />
             </TouchableOpacity>
