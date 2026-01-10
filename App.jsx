@@ -95,7 +95,7 @@ function AppContent() {
           style={[styles.headerText, { color: colors.text }]}
           onPress={() => limpiarStorage()}
         >
-          Dream Wallet
+          Wish Wallet
         </Text>
         <TouchableOpacity
           style={[

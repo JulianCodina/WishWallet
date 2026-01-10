@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 // Imagenes
 import noResult from '../public/noresult.png';
 
-function CardHistorial({ type }) {
+function CardHistorial({ type, lista, index }) {
   const { gastos, colors, setActiveTab } = useAppContext();
   const [displayGastos, setDisplayGastos] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -26,12 +26,12 @@ function CardHistorial({ type }) {
   useEffect(() => {
     if (gastos && Array.isArray(gastos)) {
       if (type == 'simple') {
-        setDisplayGastos(gastos.slice(-5).reverse());
-      } else {
-        setDisplayGastos(gastos);
+        setDisplayGastos(gastos.slice(-5));
+      } else if (lista && Array.isArray(lista)) {
+        setDisplayGastos(lista);
       }
     }
-  }, [gastos]);
+  }, [gastos, lista, type]);
 
   return (
     <View
@@ -65,6 +65,15 @@ function CardHistorial({ type }) {
           Ver más
         </Text>
       </TouchableOpacity>
+      {type == 'complex' && index && (
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text style={[styles.label, { color: colors.label }]}>{index}</Text>
+          <Text style={[styles.label, { color: colors.label }]}>
+            {displayGastos.length}{' '}
+            {displayGastos.length == 1 ? 'movimiento' : 'movimientos'}
+          </Text>
+        </View>
+      )}
       <View
         style={[
           styles.container,
@@ -72,7 +81,7 @@ function CardHistorial({ type }) {
         ]}
       >
         {displayGastos.length > 0 ? (
-          displayGastos.map(item => (
+          [...displayGastos].reverse().map(item => (
             <TouchableOpacity
               key={item.id}
               style={[styles.item, { borderColor: colors.border }]}
@@ -327,7 +336,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderBottomWidth: 1,
     alignItems: 'center',
-    zIndex: 2000,
   },
   itemContent: {
     flex: 1,
@@ -445,6 +453,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'right',
     maxWidth: '60%',
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginHorizontal: 20,
+    marginTop: 13,
+    marginBottom: -10,
   },
 });
 

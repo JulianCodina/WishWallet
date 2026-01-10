@@ -20,7 +20,7 @@ import LinearGradient from 'react-native-linear-gradient';
 // Datos de tarjeta
 const Tdatos = {
   numero: '2424 4321 3412 1234',
-  titulo: 'Dream Wallet User',
+  titulo: 'Wish Wallet User',
   vencimiento: '12/29',
   cvv: '123',
   direccion: 'Calle 123, Resistencia',
@@ -38,7 +38,7 @@ function ModalTarjeta({ isVisible, setOpen }) {
     } else {
       Alert.alert('Copiado', 'Datos de tarjeta copiados al portapapeles');
       Clipboard.setString(
-        'Datos tarjeta Dream Wallet \n Titular: ' +
+        'Datos tarjeta Wish Wallet \n Titular: ' +
           Tdatos.titulo +
           ' \n Numero: ' +
           Tdatos.numero +
@@ -102,7 +102,7 @@ function ModalTarjeta({ isVisible, setOpen }) {
             >
               <View style={styles.cardHeader}>
                 <Text style={[styles.cardTitle, { color: colors.contrast }]}>
-                  Dream Wallet
+                  Wish Wallet
                 </Text>
                 <Icon name="verified-user" size={20} color={colors.contrast} />
               </View>

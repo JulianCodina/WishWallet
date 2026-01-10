@@ -18,22 +18,19 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 const filtros = ['Transferencias', 'Pagos y Compras', 'Ingresos'];
 
 function PageHistory() {
-  const { colors, setActiveTab } = useAppContext();
+  const { colors, gastosPorFecha, setActiveTab } = useAppContext();
   const [isInputFocused, setIsInputFocused] = useState(false);
   const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState([]);
+  const [filter, setFilter] = useState();
+  const [gastos, setGastos] = useState(gastosPorFecha);
 
   const navigation = useNavigation();
 
-  const handleSearch = () => {
-    console.log('Buscando:', search);
-  };
-
   const handleFilter = filtro => {
-    if (filters.includes(filtro)) {
-      setFilters(filters.filter(item => item !== filtro));
+    if (filter === filtro) {
+      setFilter(null);
     } else {
-      setFilters([...filters, filtro]);
+      setFilter(filtro);
     }
   };
 
@@ -54,6 +51,66 @@ function PageHistory() {
 
     return () => backHandler.remove();
   }, [navigation, setActiveTab]);
+
+  useEffect(() => {
+    let resultado = gastosPorFecha;
+
+    if (filter) {
+      console.log('Filtrando: ' + filter);
+      const filteredByCategory = {};
+
+      Object.entries(gastosPorFecha).forEach(([fecha, gastosDelDia]) => {
+        let gastosFiltrados = [];
+
+        if (filter === 'Transferencias') {
+          gastosFiltrados = gastosDelDia.filter(
+            gasto => gasto.descripcion === 'Transferencia',
+          );
+        } else if (filter === 'Pagos y Compras') {
+          gastosFiltrados = gastosDelDia.filter(
+            gasto =>
+              gasto.descripcion !== 'Transferencia' &&
+              gasto.categoria !== 'Ingresos',
+          );
+        } else if (filter === 'Ingresos') {
+          gastosFiltrados = gastosDelDia.filter(
+            gasto => gasto.result === 'profit',
+          );
+        }
+
+        if (gastosFiltrados.length > 0) {
+          filteredByCategory[fecha] = gastosFiltrados;
+        }
+      });
+
+      resultado = filteredByCategory;
+    }
+
+    if (search.trim()) {
+      console.log('Buscando: ' + search);
+      const filteredBySearch = {};
+
+      Object.entries(resultado).forEach(([fecha, gastosDelDia]) => {
+        const gastosFiltrados = gastosDelDia.filter(gasto => {
+          const searchLower = search.toLowerCase();
+          return (
+            gasto.descripcion?.toLowerCase().includes(searchLower) ||
+            gasto.origen?.toLowerCase().includes(searchLower) ||
+            gasto.categoria?.toLowerCase().includes(searchLower) ||
+            String(gasto.monto).includes(search)
+          );
+        });
+
+        if (gastosFiltrados.length > 0) {
+          filteredBySearch[fecha] = gastosFiltrados;
+        }
+      });
+
+      resultado = filteredBySearch;
+    }
+
+    setGastos(resultado);
+  }, [search, filter, gastosPorFecha]);
 
   return (
     <LinearGradient
@@ -83,24 +140,26 @@ function PageHistory() {
               color={isInputFocused ? colors.primary : colors.label}
             />
             <TextInput
-              style={[styles.input]}
-              placeholder="Ingresa un alias o CVU"
+              style={[styles.input, { color: colors.text }]}
+              placeholder="Busca alguna palabra clave"
               placeholderTextColor={colors.label}
               value={search}
               onChangeText={setSearch}
               onFocus={() => setIsInputFocused(true)}
               onBlur={() => setIsInputFocused(false)}
-              returnKeyType="next"
             />
-            <Icon
-              name="x"
-              size={15}
-              color={isInputFocused ? colors.primary : colors.label}
-            />
+            {search && (
+              <Icon
+                name="clear"
+                size={16}
+                color={colors.primary}
+                onPress={() => setSearch('')}
+              />
+            )}
           </View>
           <View style={styles.chips}>
             {filtros.map((filtro, index) => {
-              const isSelected = filters.includes(filtro);
+              const isSelected = filter === filtro;
               return (
                 <TouchableOpacity
                   key={index}
@@ -130,7 +189,16 @@ function PageHistory() {
           </View>
         </View>
 
-        <CardHistorial type={'complete'} />
+        {Object.entries(gastos)
+          .reverse()
+          .map(([fecha], index) => (
+            <CardHistorial
+              key={fecha}
+              type={'complex'}
+              lista={gastos[fecha]}
+              index={fecha}
+            />
+          ))}
       </ScrollView>
     </LinearGradient>
   );
@@ -142,11 +210,13 @@ const styles = StyleSheet.create({
     paddingBottom: 70,
   },
   input: {
-    width: '100%',
+    flex: 1,
     fontSize: 16,
     textAlign: 'left',
+    paddingVertical: 10,
   },
   search: {
+    display: 'flex',
     flexDirection: 'row',
     marginHorizontal: 20,
     marginTop: 15,
@@ -154,7 +224,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderBottomWidth: 3,
     borderRadius: 8,
-    paddingVertical: 2,
     paddingHorizontal: 15,
     gap: 10,
     alignItems: 'center',

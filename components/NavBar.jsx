@@ -12,6 +12,9 @@ const NavBar = () => {
   const navigation = useNavigation();
 
   const handleHomePress = () => {
+    if (activeTab == 'home') {
+      return;
+    }
     setActiveTab('home');
     navigation.reset({
       index: 0,
@@ -20,6 +23,9 @@ const NavBar = () => {
   };
 
   const handleHistoryPress = () => {
+    if (activeTab == 'history') {
+      return;
+    }
     setActiveTab('history');
     navigation.reset({
       index: 0,
@@ -28,6 +34,9 @@ const NavBar = () => {
   };
 
   const handleStatsPress = () => {
+    if (activeTab == 'statistics') {
+      return;
+    }
     setActiveTab('statistics');
     navigation.reset({
       index: 0,

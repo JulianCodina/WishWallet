@@ -11,7 +11,7 @@ import Svg, { Rect, Line, Text as SvgText } from 'react-native-svg';
 import { useAppContext } from '../contexts/AppContext';
 import { useNavigation } from '@react-navigation/native';
 
-function GraphCard(type) {
+function GraphCard({ type }) {
   const { gastos, colors, setActiveTab } = useAppContext();
   const [loading, setLoading] = useState(true);
   const [balanceData, setBalanceData] = useState([]);
@@ -87,12 +87,11 @@ function GraphCard(type) {
 
   if (loading) {
     return (
-      <TouchableOpacity
+      <View
         style={[
           styles.card,
           { backgroundColor: colors.card, borderColor: colors.border },
         ]}
-        activeOpacity={0.9}
       >
         <TouchableOpacity
           activeOpacity={0.7}
@@ -120,7 +119,7 @@ function GraphCard(type) {
             Cargando datos ...
           </Text>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   }
 
@@ -132,8 +131,6 @@ function GraphCard(type) {
         styles.card,
         { backgroundColor: colors.card, borderColor: colors.border },
       ]}
-      onPress={() => null}
-      activeOpacity={0.9}
     >
       <TouchableOpacity
         activeOpacity={0.7}

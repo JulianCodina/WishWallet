@@ -21,11 +21,12 @@ export const AppProvider = ({ children }) => {
   const [balance, setBalance] = useState(undefined);
   const [gastos, setGastos] = useState(undefined);
   const [loading, setLoading] = useState(true);
+  const [gastosPorFecha, setGastosPorFecha] = useState({});
 
   const [activeTab, setActiveTab] = useState('home');
 
   const [userData, setUserData] = useState({
-    alias: 'dream.wallet.user',
+    alias: 'wish.wallet.user',
     cvu: '0000009600020981681002',
     userName: 'Usuario Fulanito',
     CUIL: '20-45000001-8',
@@ -37,7 +38,7 @@ export const AppProvider = ({ children }) => {
 
   const defaultGastosDec2025 = [
     {
-      id: 'g1',
+      id: 'gasto1',
       descripcion: 'Salario',
       monto: 250000,
       fecha: '2026-01-01T09:00:00',
@@ -46,100 +47,100 @@ export const AppProvider = ({ children }) => {
       result: 'profit',
     },
     {
-      id: 'g2',
+      id: 'gasto2',
       descripcion: 'Supermercado',
       monto: 42000,
-      fecha: '2026-01-02T18:30:00',
+      fecha: '2026-01-01T18:30:00',
       categoria: 'Comidas',
       origen: 'Carrefour',
       result: 'success',
     },
     {
-      id: 'g3',
+      id: 'gasto3',
       descripcion: 'Transporte',
       monto: 8000,
-      fecha: '2026-01-03T08:10:00',
+      fecha: '2026-01-01T08:10:00',
       categoria: 'Transporte',
       origen: 'Uber',
       result: 'success',
     },
     {
-      id: 'g4',
+      id: 'gasto4',
       descripcion: 'Venta freelance',
       monto: 60000,
-      fecha: '2026-01-04T14:00:00',
+      fecha: '2026-01-02T14:00:00',
       categoria: 'Ingresos',
       origen: 'Freelancer',
       result: 'profit',
     },
     {
-      id: 'g5',
+      id: 'gasto5',
       descripcion: 'Restaurante',
       monto: 25000,
-      fecha: '2026-01-05T21:15:00',
+      fecha: '2026-01-02T21:15:00',
       categoria: 'Comidas',
       origen: 'La Chimenea',
       result: 'success',
     },
     {
-      id: 'g6',
+      id: 'gasto6',
       descripcion: 'Internet',
       monto: 18000,
-      fecha: '2026-01-07T10:00:00',
+      fecha: '2026-01-03T10:00:00',
       categoria: 'Servicios',
       origen: 'Gygared',
       result: 'success',
     },
     {
-      id: 'g7',
+      id: 'gasto7',
       descripcion: 'Regalo',
       monto: 15000,
-      fecha: '2026-01-08T16:40:00',
+      fecha: '2026-01-05T16:40:00',
       categoria: 'Compras',
       origen: 'Steam',
       result: 'success',
     },
     {
-      id: 'g8',
+      id: 'gasto8',
       descripcion: 'Intereses',
       monto: 5000,
-      fecha: '2026-01-09T12:00:00',
+      fecha: '2026-01-05T12:00:00',
       categoria: 'Ingresos',
       origen: 'Banco Nación',
       result: 'profit',
     },
     {
-      id: 'g9',
+      id: 'gasto9',
       descripcion: 'Combustible',
       monto: 20000,
-      fecha: '2026-01-10T08:20:00',
+      fecha: '2026-01-6T08:20:00',
       categoria: 'Transporte',
       origen: 'YPF',
       result: 'success',
     },
     {
-      id: 'g10',
+      id: 'gasto10',
       descripcion: 'Farmacia',
       monto: 12000,
-      fecha: '2026-01-11T19:05:00',
+      fecha: '2026-01-6T19:05:00',
       categoria: 'Salud',
       origen: 'FarmaCity',
       result: 'success',
     },
     {
-      id: 'g11',
+      id: 'gasto11',
       descripcion: 'Transferencia',
       monto: 5000,
-      fecha: '2026-01-17T12:00:00',
+      fecha: '2026-01-7T12:00:00',
       categoria: 'Ingresos',
       origen: 'Pablo',
       result: 'profit',
     },
     {
-      id: 'g12',
+      id: 'gasto12',
       descripcion: 'Transferencia',
       monto: 3000,
-      fecha: '2026-01-18T13:00:00',
+      fecha: '2026-01-8T13:00:00',
       categoria: 'Ingresos',
       origen: 'Mauricio',
       result: 'profit',
@@ -225,7 +226,7 @@ export const AppProvider = ({ children }) => {
           '\nGastos: ',
           gastosStorage ? JSON.parse(gastosStorage).length : 0,
           '\nAlias: ',
-          aliasStorage !== null ? aliasStorage : 'dream.wallet.user',
+          aliasStorage !== null ? aliasStorage : 'wish.wallet.user',
         );
 
         if (balanceStorage >= 0 && balanceStorage !== null) {
@@ -258,9 +259,9 @@ export const AppProvider = ({ children }) => {
         } else {
           setUserData(prev => ({
             ...prev,
-            alias: 'dream.wallet.user',
+            alias: 'wish.wallet.user',
           }));
-          await AsyncStorage.setItem('alias', 'dream.wallet.user');
+          await AsyncStorage.setItem('alias', 'wish.wallet.user');
         }
       } catch (error) {
         console.error('Error al cargar el storage:', error);
@@ -273,12 +274,31 @@ export const AppProvider = ({ children }) => {
     cargarStorage();
   }, []);
 
-  // Notificaciones y gastos automáticos
+  // Agrupar gastos por fecha
   useEffect(() => {
-    if (loading || balance === undefined || gastos === undefined) {
-      return;
-    }
+    if (gastos && Array.isArray(gastos)) {
+      const grouped = gastos.reduce((acc, gasto) => {
+        const date = new Date(gasto.fecha);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        const fecha = `${day}/${month}/${year}`;
 
+        if (!acc[fecha]) {
+          acc[fecha] = [];
+        }
+        acc[fecha].push(gasto);
+        return acc;
+      }, {});
+      setGastosPorFecha(grouped);
+    }
+  }, [gastos]);
+
+  const procesarGastoAutomaticoRef = useRef();
+  const procesarTransferenciaRecibidaRef = useRef();
+
+  // gastos automáticos
+  useEffect(() => {
     const gastosDisponibles = [
       { nombre: 'Netflix', monto: 5999.99, categoria: 'Suscripciones' },
       { nombre: 'Spotify Premium', monto: 4599.29, categoria: 'Suscripciones' },
@@ -303,7 +323,7 @@ export const AppProvider = ({ children }) => {
       { nombre: 'Computar SRL', monto: 15000.15, categoria: 'Compras' },
     ];
 
-    const procesarGastoAutomatico = async () => {
+    procesarGastoAutomaticoRef.current = async () => {
       if (balance <= 0) {
         return;
       }
@@ -380,13 +400,108 @@ export const AppProvider = ({ children }) => {
         console.error('Error en el proceso de pago:', error.message);
       }
     };
+  }, [balance, gastos, agregarGasto, restarBalance]);
 
-    const intervalId = setInterval(procesarGastoAutomatico, 30000);
+  // transferencias recibidas
+  useEffect(() => {
+    const personasFicticias = [
+      { nombre: 'María González', alias: 'maria.gonzalez' },
+      { nombre: 'Juan Pérez', alias: 'juan.perez' },
+      { nombre: 'Carlos Rodríguez', alias: 'carlos.rod' },
+      { nombre: 'Ana Martínez', alias: 'ana.martinez' },
+      { nombre: 'Pablo Fernández', alias: 'pablo.fer' },
+      { nombre: 'Laura Sánchez', alias: 'laura.sanchez' },
+      { nombre: 'Diego López', alias: 'diego.lopez' },
+      { nombre: 'Sofía Ramírez', alias: 'sofia.ramirez' },
+      { nombre: 'Martín Torres', alias: 'martin.torres' },
+      { nombre: 'Valentina Castro', alias: 'vale.castro' },
+      { nombre: 'Lucas Morales', alias: 'lucas.morales' },
+      { nombre: 'Camila Ruiz', alias: 'cami.ruiz' },
+    ];
+
+    const montosDisponibles = [5000, 7500, 10000, 12500, 15000, 17500, 20000];
+
+    procesarTransferenciaRecibidaRef.current = async () => {
+      if (balance <= 0) {
+        return;
+      }
+
+      const persona =
+        personasFicticias[Math.floor(Math.random() * personasFicticias.length)];
+      const monto =
+        montosDisponibles[Math.floor(Math.random() * montosDisponibles.length)];
+
+      try {
+        const nuevaTransferencia = {
+          id: Date.now().toString(),
+          descripcion: 'Transferencia',
+          origen: persona.nombre,
+          monto: monto,
+          fecha: new Date().toISOString(),
+          categoria: 'Ingresos',
+          result: 'profit',
+        };
+
+        agregarGasto(nuevaTransferencia);
+        sumarBalance(monto);
+
+        showAlerta(
+          'success',
+          'Transferencia recibida',
+          `Recibiste $${monto.toLocaleString('es-AR')} de ${persona.nombre}`,
+        );
+
+        const channelId = await notifee.createChannel({
+          id: 'transferencias',
+          name: 'Transferencias Recibidas',
+        });
+
+        await notifee.displayNotification({
+          title: 'Transferencia recibida',
+          body: `${persona.nombre} te envió $${monto.toLocaleString('es-AR')}`,
+          android: {
+            channelId,
+            pressAction: {
+              id: 'default',
+            },
+          },
+        });
+
+        console.log(
+          `Transferencia recibida: ${persona.nombre} - $${monto.toLocaleString(
+            'es-AR',
+          )}`,
+        );
+      } catch (error) {
+        console.error('Error al procesar transferencia:', error.message);
+      }
+    };
+  }, [balance, gastos, agregarGasto, sumarBalance]);
+
+  useEffect(() => {
+    if (loading || balance === undefined || gastos === undefined) {
+      return;
+    }
+
+    // Intervalo para gastos automáticos (cada 31 segundos)
+    const intervalGastos = setInterval(() => {
+      if (procesarGastoAutomaticoRef.current) {
+        procesarGastoAutomaticoRef.current();
+      }
+    }, 31000);
+
+    // Intervalo para transferencias recibidas (cada 43 segundos)
+    const intervalTransferencias = setInterval(() => {
+      if (procesarTransferenciaRecibidaRef.current) {
+        procesarTransferenciaRecibidaRef.current();
+      }
+    }, 43000);
 
     return () => {
-      clearInterval(intervalId);
+      clearInterval(intervalGastos);
+      clearInterval(intervalTransferencias);
     };
-  }, [loading, balance, gastos, agregarGasto, restarBalance]);
+  }, [loading]);
 
   const valorContexto = useMemo(
     () => ({
@@ -395,6 +510,7 @@ export const AppProvider = ({ children }) => {
       colors,
       balance,
       gastos,
+      gastosPorFecha,
       userData,
       cambiarTema,
       sumarBalance,
@@ -411,6 +527,7 @@ export const AppProvider = ({ children }) => {
       colors,
       balance,
       gastos,
+      gastosPorFecha,
       userData,
       cambiarTema,
       sumarBalance,
