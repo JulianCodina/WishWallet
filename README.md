@@ -4,10 +4,10 @@ WishWallet es una aplicación premium de gestión financiera personal construida
 
 ## 📱 Vista Previa
 
-|       Home & Finanzas       |  Estadísticas & Historial  |       Modo Oscuro & Detalles       |
-| :-------------------------: | :------------------------: | :--------------------------------: |
-|  ![Home](public/Home.png)   | ![Stats](public/Stats.png) | ![DarkTheme](public/DarkTheme.png) |
-| **Bintersección de Inicio** |   **Análisis de Gastos**   |    **Soporte para Modo Oscuro**    |
+|           Home           |           Historial            |        Estadísticas        |            Modo Oscuro             |
+| :----------------------: | :----------------------------: | :------------------------: | :--------------------------------: |
+| ![Home](public/Home.png) | ![History](public/History.png) | ![Stats](public/Stats.png) | ![DarkTheme](public/DarkTheme.png) |
+|   **Página de Inicio**   |    **Lista de Movimientos**    |   **Análisis de Gastos**   |    **Soporte para Modo Oscuro**    |
 
 ### ✨ Características Destacadas
 
@@ -36,7 +36,7 @@ WishWallet es una aplicación premium de gestión financiera personal construida
   - Generación de reportes en PDF y soporte para impresión.
 - **Diseño Premium**: Interfaz moderna con gradientes, micro-animaciones y una paleta de colores curada para una mejor experiencia visual.
 
-## �️ Funcionalidades para el Usuario
+## ⚡ Funcionalidades para el Usuario
 
 - **Privacidad de Saldo**: En el dashboard principal, puedes ocultar tu saldo total con un solo toque para mayor privacidad en lugares públicos.
 - **Seguridad de Tarjeta**: Visualiza los datos de tu tarjeta virtual de forma segura; los números sensibles pueden ocultarse y mostrarse a demanda.
@@ -58,7 +58,7 @@ WishWallet es una aplicación premium de gestión financiera personal construida
 - **Reset de Datos (Developer Shortcut)**: Al presionar el título **"Wish Wallet"** en el encabezado de la app, se ejecutará una limpieza completa del `AsyncStorage` (vía `limpiarStorage()`), devolviendo la aplicación a su estado inicial cargando los gastos por defecto instalados.
 - **Persistencia Local**: Toda la lógica de balance, historial filtrado por fecha, contactos recientes y ahorros se gestiona localmente, permitiendo un testeo offline fluido.
 
-## �🚀 Tecnologías Utilizadas
+## 🚀 Tecnologías Utilizadas
 
 - **Core**: React Native (v0.82.1), React 19.
 - **Navegación**: React Navigation.
