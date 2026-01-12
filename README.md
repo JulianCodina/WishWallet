@@ -1,8 +1,8 @@
-# WishWallet 💰
+# WishWallet 📱
 
-WishWallet es una aplicación premium de gestión financiera personal construida con **React Native**. Ofrece una experiencia visualmente impactante y fluida para el seguimiento de gastos, ingresos y ahorros, incluyendo simulaciones en tiempo real para una experiencia de usuario dinámica.
+WishWallet es una aplicación movíl de gestión financiera personal construida con **React Native**. Tiene un gran enfoque al diseño UI y UX para el seguimiento de gastos, ingresos y ahorros, incluyendo simulaciones en tiempo real de movimientos para una experiencia más dinámica.
 
-## 📱 Vista Previa
+## 🔍 Vista Previa
 
 |           Home           |           Historial            |        Estadísticas        |            Modo Oscuro             |
 | :----------------------: | :----------------------------: | :------------------------: | :--------------------------------: |
@@ -14,7 +14,7 @@ WishWallet es una aplicación premium de gestión financiera personal construida
 |                Notificaciones                |             Beneficios             | Detalles                         |            Tarjetas            |
 | :------------------------------------------: | :--------------------------------: | :------------------------------- | :----------------------------: |
 | ![Notificaciones](public/Notificaciones.png) | ![Beneficio](public/Beneficio.png) | ![Detalles](public/Detalles.png) | ![Tarjeta](public/Tarjeta.png) |
-|          **Avisos en tiempo real**           |      **Modales de Beneficio**      | **Detalles de Movimiento**       |    **Gestión de Tarjetas**     |
+|          **Avisos en tiempo real**           |      **Modales de Beneficio**      |    **Detalles de Movimiento**    |      **Vista de Tarjeta**      |
 
 ## ✨ Características Principales
 
