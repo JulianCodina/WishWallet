@@ -101,7 +101,7 @@ function ModalTranferir({ isVisible, setOpen, onClose, onConfirm }) {
 
       const transferData = {
         id: Date.now().toString(),
-        descripcion: 'Tranferencia a contacto',
+        descripcion: 'Transferencia',
         origen: selectedContact.name,
         monto: parseFloat(amount),
         fecha: new Date().toISOString(),

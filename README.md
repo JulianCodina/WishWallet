@@ -1,97 +1,114 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# WishWallet 💰
 
-# Getting Started
+WishWallet es una aplicación premium de gestión financiera personal construida con **React Native**. Ofrece una experiencia visualmente impactante y fluida para el seguimiento de gastos, ingresos y ahorros, incluyendo simulaciones en tiempo real para una experiencia de usuario dinámica.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+## 📱 Vista Previa
 
-## Step 1: Start Metro
+|       Home & Finanzas       |  Estadísticas & Historial  |       Modo Oscuro & Detalles       |
+| :-------------------------: | :------------------------: | :--------------------------------: |
+|  ![Home](public/Home.png)   | ![Stats](public/Stats.png) | ![DarkTheme](public/DarkTheme.png) |
+| **Bintersección de Inicio** |   **Análisis de Gastos**   |    **Soporte para Modo Oscuro**    |
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+### ✨ Características Destacadas
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+|                Notificaciones                |             Beneficios             | Detalles                         |            Tarjetas            |
+| :------------------------------------------: | :--------------------------------: | :------------------------------- | :----------------------------: |
+| ![Notificaciones](public/Notificaciones.png) | ![Beneficio](public/Beneficio.png) | ![Detalles](public/Detalles.png) | ![Tarjeta](public/Tarjeta.png) |
+|          **Avisos en tiempo real**           |      **Modales de Beneficio**      | **Detalles de Movimiento**       |    **Gestión de Tarjetas**     |
 
-```sh
-# Using npm
-npm start
+## ✨ Características Principales
 
-# OR using Yarn
-yarn start
-```
+- **Dashboard Inteligente**: Visualización clara del saldo actual, tarjetas y últimos movimientos.
+- **Estadísticas Detalladas**:
+  - Desglose mensual de ingresos y gastos.
+  - Clasificación por categorías con barras de progreso dinámicas.
+  - Iconos inteligentes según el tipo de gasto (comida, transporte, servicios, etc.).
+- **Simulación en Tiempo Real**:
+  - Generación automática de gastos (suscripciones, servicios) y transferencias recibidas.
+  - Notificaciones locales instantáneas mediante **Notifee**.
+- **Historial Avanzado**:
+  - Búsqueda por palabras clave.
+  - Filtros rápidos por tipo (Transferencias, Pagos, Ingresos).
+  - Agrupación por fechas.
+- **Gestión de Datos**: Persistencia local mediante **AsyncStorage**.
+- **Personalización**:
+  - Soporte completo para Modo Claro y Modo Oscuro.
+  - Generación de reportes en PDF y soporte para impresión.
+- **Diseño Premium**: Interfaz moderna con gradientes, micro-animaciones y una paleta de colores curada para una mejor experiencia visual.
 
-## Step 2: Build and run your app
+## �️ Funcionalidades para el Usuario
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+- **Privacidad de Saldo**: En el dashboard principal, puedes ocultar tu saldo total con un solo toque para mayor privacidad en lugares públicos.
+- **Seguridad de Tarjeta**: Visualiza los datos de tu tarjeta virtual de forma segura; los números sensibles pueden ocultarse y mostrarse a demanda.
+- **Historial Inteligente**:
+  - **Búsqueda**: Encuentra cualquier movimiento por nombre, categoría o monto.
+  - **Filtros**: Clasifica rápidamente entre transferencias, ingresos o compras.
+- **Análisis de Finanzas**: Pantalla de estadísticas dedicada con gráficos de barras de progreso para entender en qué gastas y de dónde provienen tus ingresos.
+- **El Frasco de Ahorro (Crecimiento)**: Una sección especial donde puedes ver cómo tus ahorros generan intereses simulados, incentivando el hábito del ahorro.
+- **Agenda de Contactos**: La app guarda automáticamente tus contactos frecuentes de transferencias para que enviar dinero sea más rápido. Además, cuenta con una lista de contactos predefinidos para agilizar tus primeras pruebas.
+- **Promociones y Ofertas**: Sección exclusiva con descuentos y beneficios en tiendas populares (comida, tecnología, supermercados), con detalles de topes de reintegro y fechas de vigencia.
+- **Modo Oscuro/Claro**: Cambia el tema de la aplicación instantáneamente desde el header para adaptarlo a tu preferencia.
 
-### Android
+## ⚙️ Notas para Desarrolladores
 
-```sh
-# Using npm
-npm run android
+- **Motor de Simulación Activa**:
+  - La app genera **Pagos Automáticos** de servicios (Netflix, Spotify, etc.) cada 31 segundos si hay saldo suficiente.
+  - Genera **Transferencias Recibidas** de personas ficticias cada 43 segundos para mantener el flujo de caja dinámico.
+  - Notificaciones locales integradas vía **Notifee** para cada evento simulado.
+- **Reset de Datos (Developer Shortcut)**: Al presionar el título **"Wish Wallet"** en el encabezado de la app, se ejecutará una limpieza completa del `AsyncStorage` (vía `limpiarStorage()`), devolviendo la aplicación a su estado inicial cargando los gastos por defecto instalados.
+- **Persistencia Local**: Toda la lógica de balance, historial filtrado por fecha, contactos recientes y ahorros se gestiona localmente, permitiendo un testeo offline fluido.
 
-# OR using Yarn
-yarn android
-```
+## �🚀 Tecnologías Utilizadas
 
-### iOS
+- **Core**: React Native (v0.82.1), React 19.
+- **Navegación**: React Navigation.
+- **Estado**: Context API.
+- **Estilos**: Vanilla StyleSheet con soporte dinámico de temas.
+- **Gráficos**: React Native Chart Kit.
+- **Persistencia**: @react-native-async-storage/async-storage.
+- **Notificaciones**: @notifee/react-native.
+- **UI Components**:
+  - React Native Linear Gradient.
+  - React Native Vector Icons (MaterialIcons & MaterialCommunityIcons).
+- **Utilidades**:
+  - React Native HTML to PDF.
+  - React Native Print.
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## 🛠️ Instalación y Configuración
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Sigue estos pasos para ejecutar el proyecto localmente:
 
-```sh
-bundle install
-```
+1. **Clonar el repositorio**:
 
-Then, and every time you update your native dependencies, run:
+   ```bash
+   git clone https://github.com/usuario/WishWallet.git
+   cd WishWallet
+   ```
 
-```sh
-bundle exec pod install
-```
+2. **Instalar dependencias**:
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+   ```bash
+   npm install
+   # o
+   yarn install
+   ```
 
-```sh
-# Using npm
-npm run ios
+3. **Ejecutar en Android**:
 
-# OR using Yarn
-yarn ios
-```
+   ```bash
+   npx react-native run-android
+   ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+4. **Ejecutar en iOS** (Requiere macOS):
+   ```bash
+   cd ios && pod install && cd ..
+   npx react-native run-ios
+   ```
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+## 📁 Estructura del Proyecto
 
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- `/components`: Componentes reutilizables (Tarjetas, Modales, Alertas).
+- `/contexts`: Manejo de estado global mediante `AppContext`.
+- `/pages`: Pantallas principales (Home, History, Statistics).
+- `/public`: Activos estáticos e imágenes.
+- `colors.js`: Definición del sistema de diseño y temas (Light/Dark).

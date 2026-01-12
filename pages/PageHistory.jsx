@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   BackHandler,
+  Image,
 } from 'react-native';
 import CardHistorial from '../components/CardHistorial';
 import LinearGradient from 'react-native-linear-gradient';
@@ -14,6 +15,8 @@ import { useAppContext } from '../contexts/AppContext';
 import { useNavigation } from '@react-navigation/native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import noResult from '../public/noresult.png';
 
 const filtros = ['Transferencias', 'Pagos y Compras', 'Ingresos'];
 
@@ -87,7 +90,6 @@ function PageHistory() {
     }
 
     if (search.trim()) {
-      console.log('Buscando: ' + search);
       const filteredBySearch = {};
 
       Object.entries(resultado).forEach(([fecha, gastosDelDia]) => {
@@ -199,6 +201,19 @@ function PageHistory() {
               index={fecha}
             />
           ))}
+        {Object.keys(gastos).length === 0 && (
+          <View style={{ alignItems: 'center', marginTop: 50 }}>
+            <Image
+              source={noResult}
+              style={{ width: 200, height: 200 }}
+              resizeMode="contain"
+              opacity={0.5}
+            />
+            <Text style={{ color: colors.label, fontSize: 16 }}>
+              No se encontraron movimientos
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </LinearGradient>
   );
